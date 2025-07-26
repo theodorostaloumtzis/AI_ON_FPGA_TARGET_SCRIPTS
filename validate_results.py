@@ -49,7 +49,7 @@ if str(PROJECT_DIR) not in sys.path:
 
 from mnist_utils import get_mnist_test_labels
 
-# ────────────────────────── CLI ──────────────────────────
+# CLI 
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
@@ -74,7 +74,7 @@ def parse_args() -> argparse.Namespace:
                    help="Do not call plt.show() after saving plots")
     return p.parse_args()
 
-# ───────────────────── Helper functions ───────────────────
+# Helper functions 
 
 def _ensure_2d(arr: np.ndarray) -> np.ndarray:
     """Return (N,C) float32; convert 1‑D int labels to one‑hot."""
@@ -97,7 +97,7 @@ def _align(a: np.ndarray, b: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         return x[:, :C]
     return pad(a), pad(b)
 
-# ───────────────────── Plot helpers ───────────────────────
+# Plot helpers
 
 def plot_confusion(cm: np.ndarray, out_path: Path):
     fig, ax = plt.subplots(figsize=(6, 5))
@@ -148,7 +148,7 @@ def plot_multi_roc(y_true: np.ndarray, y_scores: np.ndarray, out_path: Path):
     fig.savefig(out_path, dpi=150)
     return fig
 
-# ─────────────────────────── Main ─────────────────────────
+# Main 
 
 def main():
     args = parse_args()
@@ -158,7 +158,7 @@ def main():
     try:
         y_hw = np.load(mdir / args.y_hw)
     except FileNotFoundError:
-        sys.exit(f"[ERR] Missing {mdir/args.y_hw}.")
+        sys.exit(f"[ERROR] Missing {mdir/args.y_hw}.")
 
     golden_path = mdir / args.golden
     y_ref = np.load(golden_path) if golden_path.exists() else None

@@ -6,10 +6,10 @@ Processes each quantized MNIST test image individually using the FPGA accelerato
 Displays logits and timing metrics, with optional progress bar.
 
 Usage:
-    python3 on_target.py --bitstream bitstreams/quant50/quant50_cnn.bit
+    python on_target.py --bitstream bitstreams/quant50/quant50_cnn.bit
 
 Optional arguments:
-    python3 on_target.py -b path/to/bit.bit \
+    python on_target.py -b path/to/bit.bit \
             --metrics-dir path/to/metrics/ \
             --no-progress
 """
@@ -76,28 +76,28 @@ def run_per_sample(nn: NeuralNetworkOverlay, X: np.ndarray, show_bar: bool) -> T
 def main():
     args = parse_args()
 
-    print("[INFO] Loading and quantizing MNIST test set...")
+    print("1. Loading and quantizing MNIST test set...")
     X_test_i16, y_test_int = load_and_quantize_mnist()
     n_samples, feat_dim = X_test_i16.shape
     print(f"        Samples: {n_samples}   Feature dimension: {feat_dim}")
 
-    print("[INFO] Programming FPGA with bitstream...")
+    print("2. Programming FPGA with bitstream...")
     nn = allocate_overlay(args.bitstream, feat_dim)
 
-    print("[INFO] Starting inference...")
+    print("3. Starting inference...")
     y_hw_f32, latency_s, throughput = run_per_sample(nn, X_test_i16, args.no_progress)
 
-    print("[INFO] Calculating accuracy...")
+    print("4. Calculating accuracy...")
     pred = np.argmax(y_hw_f32, axis=1)
     acc = (pred == y_test_int).mean()
     print(f"[RESULT] Hardware accuracy: {acc * 100:.2f}%")
 
-    print("[INFO] Saving results...")
+    print("5. Saving results...")
     os.makedirs(args.metrics_dir, exist_ok=True)
     np.save(os.path.join(args.metrics_dir, "y_hw.npy"), y_hw_f32)
     np.save(os.path.join(args.metrics_dir, "latency.npy"), latency_s)
     np.save(os.path.join(args.metrics_dir, "throughput.npy"), throughput)
-    print("[OK] Metrics saved to", args.metrics_dir)
+    print("Metrics saved to", args.metrics_dir)
 
 if __name__ == "__main__":
     main()

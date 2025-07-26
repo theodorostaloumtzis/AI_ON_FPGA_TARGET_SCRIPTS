@@ -14,9 +14,7 @@ from typing import Tuple
 # Allow HTTPS even when CA bundle is missing (common on embedded distros)
 ssl._create_default_https_context = ssl._create_unverified_context  # type: ignore
 
-# -----------------------------------------------------------------------------
 # Fixed-point parameters for ap_fixed<16,6> (total=16, integer=6, frac=10)
-# -----------------------------------------------------------------------------
 FRAC_BITS: int = 10
 SCALE: int = 1 << FRAC_BITS  # 2¹⁰ = 1024
 
@@ -28,9 +26,8 @@ def decode_arr(x_i16: np.ndarray) -> np.ndarray:
     """Vectorised decoder: int16 (Q6.10) → float32."""
     return x_i16.astype(np.float32, copy=False) / SCALE
 
-# -----------------------------------------------------------------------------
+
 # Robust MNIST loader (IDX format) — tries multiple mirrors
-# -----------------------------------------------------------------------------
 _BASE_NAMES = {
     "images": "t10k-images-idx3-ubyte.gz",
     "labels": "t10k-labels-idx1-ubyte.gz",
@@ -63,10 +60,7 @@ def _load_idx(img_path: str, lbl_path: str) -> Tuple[np.ndarray, np.ndarray]:
         labels = np.frombuffer(f.read(), dtype=np.uint8)
     return images, labels
 
-# -----------------------------------------------------------------------------
 # Public API
-# -----------------------------------------------------------------------------
-
 def load_and_quantize_mnist(cache_dir: str = "mnist") -> Tuple[np.ndarray, np.ndarray]:
     """Download (if needed), normalise, and quantise MNIST test set.
 
