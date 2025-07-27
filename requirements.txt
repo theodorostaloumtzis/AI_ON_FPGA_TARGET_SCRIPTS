@@ -1,0 +1,18 @@
+# ROCm-compatible TensorFlow (manually install the wheel for 2.18.1)
+tensorflow==2.18.1
+
+# Core scientific packages
+numpy==1.26.4
+scipy
+pandas
+scikit-learn
+matplotlib
+seaborn
+statsmodels
+tqdm
+
+# Keras with ROCm
+tf-keras==2.18.0
+
+# QKeras may require patching or manual installation
+qkeras @ git+https://github.com/google/qkeras.git

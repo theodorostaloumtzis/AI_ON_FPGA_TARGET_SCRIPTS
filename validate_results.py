@@ -38,7 +38,7 @@ from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
     roc_curve,
-    auc,
+    auc
 )
 
 # --- ensure local project modules are importable ----------
@@ -48,6 +48,8 @@ if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))  # add <ai_on_fpga/> directory to PYTHONPATH
 
 from mnist_utils import get_mnist_test_labels
+
+PIXELS_PER_IMAGE = 28 * 28  # MNIST images are 28x28 pixels
 
 # CLI 
 
@@ -187,8 +189,8 @@ def main():
         lat = np.load(lat_path)
         thr = np.load(thr_path)
         print("\nLatency / Throughput:")
-        print(f"  latency   : {lat.mean()*1e3:.2f} ms ± {lat.std()*1e3:.2f} (min {lat.min()*1e3:.2f}, max {lat.max()*1e3:.2f})")
-        print(f"  throughput: {thr.mean():.1f} inf/s ± {thr.std():.1f}")
+        print(f"  latency   : {lat.mean()*1e3:.4f} ms ± {lat.std()*1e3:.4f} (min {lat.min()*1e3:.4f}, max {lat.max()*1e3:.4f})")
+        print(f"  throughput: {thr.mean()/PIXELS_PER_IMAGE:.4f} inf/s ± {thr.std()/PIXELS_PER_IMAGE:.4f}")
 
     # Confusion Matrix plot
     cm = confusion_matrix(np.argmax(y_true,1), np.argmax(y_hw,1))
