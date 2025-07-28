@@ -14,12 +14,16 @@ class NeuralNetworkOverlay(Overlay):
         self.input_buffer = allocate(shape=x_shape, dtype=dtype)
         self.output_buffer = allocate(shape=y_shape, dtype=dtype)
 
-    def _print_dt(self, timea, timeb, N):
-        dt = timeb - timea
-        dts = dt.seconds + dt.microseconds * 10**-6
-        rate = N / dts
+    def _print_dt(self, timea, timeb, timec, N):
+        dt_coms = timec - timea
+        dts_coms = dt_coms.seconds + dt_coms.microseconds * 10**-6
+        rate_coms = N / dts_coms
+
+        dt_inf = timec - timeb
+        dts_inf = dt_inf.seconds + dt_inf.microseconds * 10**-6
+        rate_inf = N / dts_inf
         #print(f"Classified {N} samples in {dts} seconds ({rate} inferences / s)")
-        return dts, rate
+        return dts_coms, rate_coms, dts_inf, rate_inf
 
     def predict(self, X, debug=False, profile=False, encode=None, decode=None):
         """
@@ -58,6 +62,8 @@ class NeuralNetworkOverlay(Overlay):
         if debug:
             print("Transfer OK")
         self.sendchannel.wait()
+        if profile:
+            timeb = datetime.now()
         if debug:
             print("Send OK")
         self.recvchannel.wait()
@@ -68,8 +74,8 @@ class NeuralNetworkOverlay(Overlay):
             self.output_buffer = decode(self.output_buffer)
 
         if profile:
-            timeb = datetime.now()
-            dts, rate = self._print_dt(timea, timeb, len(X))
-            return self.output_buffer, dts, rate
+            timec = datetime.now()
+            dts1, rate1, dts2, rate2 = self._print_dt(timea, timeb, timec, 1)
+            return self.output_buffer, dts1, rate1, dts2, rate2
         else:
             return self.output_buffer

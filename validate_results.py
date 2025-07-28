@@ -49,7 +49,6 @@ if str(PROJECT_DIR) not in sys.path:
 
 from mnist_utils import get_mnist_test_labels
 
-PIXELS_PER_IMAGE = 28 * 28  # MNIST images are 28x28 pixels
 
 # CLI 
 
@@ -183,14 +182,21 @@ def main():
         print(f"HW vs Golden Accuracy      : {acc_ref*100:.2f}% (golden as truth)")
 
     # Latency / Throughput
-    lat_path = mdir / args.latency
-    thr_path = mdir / args.throughput
-    if lat_path.exists() and thr_path.exists():
-        lat = np.load(lat_path)
-        thr = np.load(thr_path)
-        print("\nLatency / Throughput:")
-        print(f"  latency   : {lat.mean()*1e3:.4f} ms ± {lat.std()*1e3:.4f} (min {lat.min()*1e3:.4f}, max {lat.max()*1e3:.4f})")
-        print(f"  throughput: {thr.mean()/PIXELS_PER_IMAGE:.4f} inf/s ± {thr.std()/PIXELS_PER_IMAGE:.4f}")
+    lat1_path = mdir / "latency1.npy"
+    thr1_path = mdir / "throughput1.npy"
+    lat2_path = mdir / "latency2.npy"
+    thr2_path = mdir / "throughput2.npy"
+    if lat1_path.exists() and thr1_path.exists() and lat2_path.exists() and thr2_path.exists():
+        lat1 = np.load(lat1_path)
+        thr1 = np.load(thr1_path)
+        lat2 = np.load(lat2_path)
+        thr2 = np.load(thr2_path)
+        print("\nLatency / Throughput (with coms delay):")
+        print(f"  latency   : {lat1.mean()*1e3:.4f} ms ± {lat1.std()*1e3:.4f} (min {lat1.min()*1e3:.4f}, max {lat1.max()*1e3:.4f})")
+        print(f"  throughput: {thr1.mean():.4f} inf/s ± {thr1.std():.4f}")
+        print("\nLatency / Throughput (inference times):")
+        print(f"  latency   : {lat2.mean()*1e3:.4f} ms ± {lat2.std()*1e3:.4f} (min {lat2.min()*1e3:.4f}, max {lat2.max()*1e3:.4f})")
+        print(f"  throughput: {thr2.mean():.4f} inf/s ± {thr2.std():.4f}")
 
     # Confusion Matrix plot
     cm = confusion_matrix(np.argmax(y_true,1), np.argmax(y_hw,1))

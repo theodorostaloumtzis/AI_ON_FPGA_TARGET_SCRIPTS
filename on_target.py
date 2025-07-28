@@ -51,27 +51,31 @@ def run_per_sample(nn: NeuralNetworkOverlay, X: np.ndarray, show_bar: bool) -> T
     """Runs inference on each sample in X using the FPGA overlay."""
     n_samples, _ = X.shape
     y_pred_f32 = np.empty((n_samples, OUTPUT_DIM), dtype=np.float32)
-    latency_s = np.empty(n_samples, dtype=np.float32)
-    throughput = np.empty(n_samples, dtype=np.float32)
+    latency_s_coms = np.empty(n_samples, dtype=np.float32)
+    throughput_coms = np.empty(n_samples, dtype=np.float32)
+    latency_s_inf = np.empty(n_samples, dtype=np.float32)
+    throughput_inf = np.empty(n_samples, dtype=np.float32)
 
     iterator = tqdm(range(n_samples), unit="sample", disable=show_bar, desc="Inference", dynamic_ncols=True) if not show_bar else range(n_samples)
 
     for idx in iterator:
         sample_i16 = X[idx]
-        raw_pred_i16, dt, rate = nn.predict(
+        raw_pred_i16, dt_coms, rate_coms, dt_inf, rate_inf = nn.predict(
             sample_i16,
             profile=True,
             encode=None,  # Already quantized
             decode=None,
         )
         y_pred_f32[idx] = decode_arr(raw_pred_i16.copy())
-        latency_s[idx] = dt
-        throughput[idx] = rate
+        latency_s_coms[idx] = dt_coms
+        throughput_coms[idx] = rate_coms
+        latency_s_inf[idx] = dt_inf
+        throughput_inf[idx] = rate_inf
 
     if isinstance(iterator, tqdm):
         iterator.close()
 
-    return y_pred_f32, latency_s, throughput
+    return y_pred_f32, latency_s_coms, throughput_coms, latency_s_inf, throughput_inf
 
 def main():
     args = parse_args()
@@ -85,7 +89,7 @@ def main():
     nn = allocate_overlay(args.bitstream, feat_dim)
 
     print("3. Starting inference...")
-    y_hw_f32, latency_s, throughput = run_per_sample(nn, X_test_i16, args.no_progress)
+    y_hw_f32, latency_s_coms, throughput_coms, latency_s_inf, throughput_inf  = run_per_sample(nn, X_test_i16, args.no_progress)
 
     print("4. Calculating accuracy...")
     pred = np.argmax(y_hw_f32, axis=1)
@@ -95,8 +99,10 @@ def main():
     print("5. Saving results...")
     os.makedirs(args.metrics_dir, exist_ok=True)
     np.save(os.path.join(args.metrics_dir, "y_hw.npy"), y_hw_f32)
-    np.save(os.path.join(args.metrics_dir, "latency.npy"), latency_s)
-    np.save(os.path.join(args.metrics_dir, "throughput.npy"), throughput)
+    np.save(os.path.join(args.metrics_dir, "latency1.npy"), latency_s_coms)
+    np.save(os.path.join(args.metrics_dir, "throughput1.npy"), throughput_coms)
+    np.save(os.path.join(args.metrics_dir, "latency2.npy"), latency_s_inf)
+    np.save(os.path.join(args.metrics_dir, "throughput2.npy"), throughput_inf)
     print("Metrics saved to", args.metrics_dir)
 
 if __name__ == "__main__":
