@@ -6,23 +6,15 @@ Checks FPGA predictions against MNIST ground‑truth and, if available,
 against a *golden* reference dump. Generates / shows confusion matrix &
 ROC plots and prints latency / throughput statistics when present.
 
+Also supports power analysis (avg / min / max / hist / energy per sample)
+if `power_mw.npy` and `power_duration.npy` are present.
+
 Usage
 -----
 $ python validate_results.py -m metrics/            # default names
 $ python validate_results.py -m runs/exp1 \
       --y-hw hw_logits.npy --golden golden.npy \
       --no-show                                    # skip inline display
-
-Outputs
--------
-• Accuracy (HW vs ground‑truth)
-• Accuracy (HW vs golden) — only if golden file found
-• Avg / σ / min / max latency & throughput (optional)
-• confusion_matrix.png
-• roc_curve.png
-
-All images are saved inside `--metrics-dir` and also displayed unless
-`--no-show` is set or the backend is headless.
 """
 from __future__ import annotations
 
@@ -31,6 +23,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Tuple
+import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -42,7 +35,6 @@ from sklearn.metrics import (
 )
 
 # --- ensure local project modules are importable ----------
-from pathlib import Path
 PROJECT_DIR = Path(__file__).resolve().parent
 if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))  # add <ai_on_fpga/> directory to PYTHONPATH
@@ -197,6 +189,41 @@ def main():
         print("\nLatency / Throughput (inference times):")
         print(f"  latency   : {lat2.mean()*1e3:.4f} ms ± {lat2.std()*1e3:.4f} (min {lat2.min()*1e3:.4f}, max {lat2.max()*1e3:.4f})")
         print(f"  throughput: {thr2.mean():.4f} inf/s ± {thr2.std():.4f}")
+
+    # --- POWER METRICS ---
+    power_path = mdir / "power_mw.npy"
+    duration_path = mdir / "power_duration.npy"
+    if power_path.exists() and duration_path.exists():
+        power_vals = np.load(power_path)
+        duration_vals = np.load(duration_path)
+
+        avg_power = power_vals.mean()
+        std_power = power_vals.std()
+        min_power = power_vals.min()
+        max_power = power_vals.max()
+
+        total_energy_j = (power_vals * duration_vals).sum() / 1e3  # mW * s = mJ → J
+        energy_per_sample_mj = (power_vals * duration_vals).mean()
+
+        print("\nPower Consumption:")
+        print(f"  avg power     : {avg_power:.2f} mW ± {std_power:.2f}")
+        print(f"  min/max power : {min_power:.2f} / {max_power:.2f} mW")
+        print(f"  energy/sample : {energy_per_sample_mj:.4f} mJ")
+        print(f"  total energy  : {total_energy_j*1e3:.2f} mJ")
+
+        # Optional histogram plot
+        try:
+            fig, ax = plt.subplots(figsize=(6,4))
+            ax.hist(power_vals, bins=30, color="skyblue", edgecolor="black")
+            ax.set_title("Power Consumption Histogram")
+            ax.set_xlabel("Power (mW)")
+            ax.set_ylabel("Frequency")
+            fig.tight_layout()
+            hist_path = mdir / "power_histogram.png"
+            fig.savefig(hist_path, dpi=150)
+            print(f"Power histogram saved → {hist_path}")
+        except Exception as e:
+            warnings.warn(f"Could not plot power histogram: {e}")
 
     # Confusion Matrix plot
     cm = confusion_matrix(np.argmax(y_true,1), np.argmax(y_hw,1))
