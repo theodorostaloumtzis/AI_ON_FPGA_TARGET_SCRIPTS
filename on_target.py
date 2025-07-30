@@ -20,7 +20,7 @@ from mnist_utils          import load_and_quantize_mnist
 from utils.power_monitor  import PowerMonitor
 
 OUTPUT_DIM = 10
-IDLE_SECONDS = 3.0          # record 3 s of idle samples
+IDLE_SECONDS = 10.0          # record 10 s of idle samples
 SAMPLE_DT   = 0.001          # INA260 sampling interval (10 ms)
 
 # ---------------------------------------------------------------
@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument("-b", "--bitstream", required=True, help="Compiled .bit file path")
     p.add_argument("-m", "--metrics-dir", default="metrics/", help="Where to save .npy outputs")
-    p.add_argument("--batch-size", type=int, default=16, help="Batch size for inference")
+    p.add_argument("--batch-size", type=int, default=100, help="Batch size for inference")
     p.add_argument("--no-progress", action="store_true", help="Disable tqdm progress bar")
     return p.parse_args()
 
