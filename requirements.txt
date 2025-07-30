@@ -1,8 +1,27 @@
-# ROCm-compatible TensorFlow (manually install the wheel for 2.18.1)
-tensorflow==2.18.1
+############################################################
+# Deep-learning frameworks
+############################################################
+# Nightly PyTorch 2.9 wheels built for ROCm 6.4
+# (install via the dedicated nightly index, see below)
+#torch
+#torchvision
+#torchaudio
 
-# Core scientific packages
-numpy==1.26.4
+# TensorFlow 2.18.1 – CPU-only build from PyPI
+tensorflow==2.16.1            # no ROCm/CUDA extras :contentReference[oaicite:0]{index=0}
+tf-keras               # keeps the Keras-2 API symbols alive :contentReference[oaicite:1]{index=1}
+
+############################################################
+# Model-conversion / ONNX bridge
+############################################################
+tf2onnx
+onnx
+onnxruntime           # CPU runtime; ROCm GPU build not needed :contentReference[oaicite:2]{index=2}
+onnx2pytorch
+############################################################
+# Core scientific stack
+############################################################
+numpy
 scipy
 pandas
 scikit-learn
@@ -11,8 +30,7 @@ seaborn
 statsmodels
 tqdm
 
-# Keras with ROCm
-tf-keras==2.18.0
-
-# QKeras may require patching or manual installation
-qkeras @ git+https://github.com/google/qkeras.git
+############################################################
+# Quantisation utilities
+############################################################
+qkeras @ git+https://github.com/google/qkeras.git@master
