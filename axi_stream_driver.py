@@ -6,14 +6,14 @@ import glob
 from pynq import Overlay, allocate
 
 class NeuralNetworkOverlay(Overlay):
-    def __init__(self, bitfile_name, x_shape, y_shape, dtype=np.float32,
+    def __init__(self, bitfile_name, x_shape, y_shape, dtype=np.uint16,
                  dtbo=None, download=True, ignore_version=False, device=None):
         super().__init__(bitfile_name, dtbo=dtbo, download=download,
                          ignore_version=ignore_version, device=device)
         self.sendchannel = self.hier_0.axi_dma_0.sendchannel
         self.recvchannel = self.hier_0.axi_dma_0.recvchannel
         self.input_buffer = allocate(shape=x_shape, dtype=dtype)
-        self.output_buffer = allocate(shape=y_shape, dtype=dtype)
+        self.output_buffer = allocate(shape=y_shape, dtype=np.uint16)
 
     def _print_dt(self, timea, timeb, timec, N):
         dt_coms = timec - timea
@@ -51,38 +51,3 @@ class NeuralNetworkOverlay(Overlay):
             dts1, rate1, dts2, rate2 = self._print_dt(timea, timeb, timec, 1)
             out.extend([dts1, rate1, dts2, rate2])
         return tuple(out) if len(out) > 1 else out[0]
-
-    def predict_batch(self, X_batch, profile=False):
-        N = X_batch.shape[0]
-        y_batch = np.empty((N, *self.output_buffer.shape), dtype=np.float32)
-        lat_coms = np.empty(N, dtype=np.float32)
-        lat_inf = np.empty(N, dtype=np.float32)
-        t_bounds = []
-
-        for i in range(N):
-            if profile:
-                t_start = datetime.now()
-                ts_start = time.time()
-
-            self.input_buffer[:] = X_batch[i]
-            self.sendchannel.transfer(self.input_buffer)
-            self.recvchannel.transfer(self.output_buffer)
-            self.sendchannel.wait()
-
-            if profile:
-                t_mid = datetime.now()
-            self.recvchannel.wait()
-
-            if profile:
-                t_end = datetime.now()
-                ts_stop = time.time()
-
-            y_out = self.output_buffer.copy().astype(np.float32)
-            y_batch[i] = y_out
-
-            if profile:
-                lat_coms[i] = (t_end - t_start).total_seconds()
-                lat_inf[i] = (t_end - t_mid).total_seconds()
-                t_bounds.append((ts_start, ts_stop))
-
-        return y_batch, lat_coms, lat_inf, t_bounds
