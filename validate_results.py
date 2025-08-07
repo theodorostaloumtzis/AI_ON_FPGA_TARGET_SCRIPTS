@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """
-validate_results.py — metrics & plots (no power / idle baseline)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Validates FPGA output (y_hw.npy) against the MNIST ground-truth labels
-and, optionally, against a golden reference.  Also prints latency and
-throughput statistics gathered during inference.
+validate_results.py — metrics & plots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Validates FPGA output (y_hw.npy) against the MNIST ground-truth labels and
+(optional) golden reference; prints robust latency / throughput statistics
+(with P50/P90/P99 and optional outlier trimming) and raw cycle counts.
+Saves a confusion-matrix PNG and a multi-class ROC curve PNG.
 
-Typical usage
--------------
-$ python validate_results.py -m metrics/
-$ python validate_results.py -m metrics/ --no-show            # skip plots
+Examples
+--------
+python validate_results.py -m metrics/
+python validate_results.py -m metrics/ --clk-mhz 150 --exclude-pct 1
 """
 from __future__ import annotations
 import argparse
@@ -19,31 +20,44 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, auc
 
-from mnist_utils import get_mnist_test_labels               # ground-truth labels
-
-# ------------------------------------------------------------------
-# CLI helpers
-# ------------------------------------------------------------------
+from mnist_utils import get_mnist_test_labels  # ground-truth labels
+# ─────────────────────────────────────────────────────────────────────────────
+# CLI
+# ─────────────────────────────────────────────────────────────────────────────
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    p.add_argument("-m", "--metrics-dir", default="metrics/", help="Directory containing *.npy results")
-    p.add_argument("--y-hw",      default="y_hw.npy",          help="FPGA logits file")
-    p.add_argument("--golden",    default="golden_preds.npy",  help="Optional golden logits file")
-    # new metric filenames emitted by the revised run-script
-    p.add_argument("--latency-comm",   default="latency_comm.npy")
-    p.add_argument("--throughput-comm",default="throughput_comm.npy")
-    p.add_argument("--latency-inf",    default="latency_inf.npy")
-    p.add_argument("--throughput-inf", default="throughput_inf.npy")
+    p = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    p.add_argument("-m", "--metrics-dir", default="metrics/",
+                   help="Directory containing *.npy results")
+    p.add_argument("--y-hw",      default="y_hw.npy",
+                   help="FPGA logits file")
+    p.add_argument("--golden",    default="golden_preds.npy",
+                   help="Optional golden-reference logits file")
+    # timing / throughput arrays
+    p.add_argument("--latency-comm",    default="latency_comm.npy")
+    p.add_argument("--throughput-comm", default="throughput_comm.npy")
+    p.add_argument("--latency-inf",     default="latency_inf.npy")
+    p.add_argument("--throughput-inf",  default="throughput_inf.npy")
+    # raw cycles
+    p.add_argument("--cycles",    default="cycles_raw.npy",
+                   help="Optional raw cycle-count file")
+    p.add_argument("--clk-mhz",   type=float, default=None,
+                   help="FPGA clock in MHz for cycles→µs conversion")
+    # outlier trimming & plotting
+    p.add_argument("--exclude-pct", type=float, default=0.0,
+                   help="Trim the slowest P%% latency samples (0 = keep all)")
     p.add_argument("--cm-name",  default="confusion_matrix.png")
     p.add_argument("--roc-name", default="roc_curve.png")
-    p.add_argument("--no-show",  action="store_true", help="Skip plt.show()")
+    p.add_argument("--no-show",  action="store_true",
+                   help="Skip plt.show() (useful in headless runs)")
     return p.parse_args()
 
-# ------------------------------------------------------------------
-# Utility functions
-# ------------------------------------------------------------------
+# ─────────────────────────────────────────────────────────────────────────────
+# Helper functions
+# ─────────────────────────────────────────────────────────────────────────────
 def _ensure_2d(arr: np.ndarray) -> np.ndarray:
-    """Convert 1-hot label vector → 2-D logits-like array if needed."""
+    """Ensure logits-like 2-D array (N,C). Converts 1-D label vector to one-hot."""
     if arr.ndim == 1:
         C = int(arr.max() + 1)
         out = np.zeros((arr.size, C), dtype=np.float32)
@@ -52,9 +66,13 @@ def _ensure_2d(arr: np.ndarray) -> np.ndarray:
     return arr.astype(np.float32)
 
 def _align(a: np.ndarray, b: np.ndarray):
-    """Pad / truncate two logit tensors so they share the same class-dim."""
+    """Pad / truncate so both arrays share the same class dimension."""
     C = max(a.shape[1], b.shape[1])
-    pad = lambda x: np.hstack([x, np.zeros((x.shape[0], C - x.shape[1]), x.dtype)]) if x.shape[1] < C else x[:, :C]
+    def pad(x):
+        if x.shape[1] < C:
+            pad_cols = np.zeros((x.shape[0], C - x.shape[1]), dtype=x.dtype)
+            return np.hstack([x, pad_cols])
+        return x[:, :C]
     return pad(a), pad(b)
 
 def plot_confusion(cm: np.ndarray, path: Path):
@@ -77,13 +95,16 @@ def plot_confusion(cm: np.ndarray, path: Path):
     fig.savefig(path, dpi=150)
 
 def plot_multi_roc(y_true: np.ndarray, y_scores: np.ndarray, path: Path):
+    """Macro-averaged ROC and per-class curves."""
     n_cls = y_true.shape[1]
     fpr, tpr, auc_s = {}, {}, {}
     for c in range(n_cls):
         fpr[c], tpr[c], _ = roc_curve(y_true[:, c], y_scores[:, c])
         auc_s[c] = auc(fpr[c], tpr[c])
     all_fpr = np.unique(np.concatenate([fpr[c] for c in range(n_cls)]))
-    mean_tpr = np.mean([np.interp(all_fpr, fpr[c], tpr[c]) for c in range(n_cls)], axis=0)
+    mean_tpr = np.mean(
+        [np.interp(all_fpr, fpr[c], tpr[c]) for c in range(n_cls)], axis=0
+    )
     macro_auc = auc(all_fpr, mean_tpr)
     fig, ax = plt.subplots(figsize=(6, 5))
     ax.plot(all_fpr, mean_tpr, label=f"macro AUC = {macro_auc:.2f}", lw=2)
@@ -96,43 +117,86 @@ def plot_multi_roc(y_true: np.ndarray, y_scores: np.ndarray, path: Path):
     fig.tight_layout()
     fig.savefig(path, dpi=150)
 
-# ------------------------------------------------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
-# ------------------------------------------------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 def main() -> None:
     args = parse_args()
     mdir = Path(args.metrics_dir)
 
-    # --- predictions ---------------------------------------------------
+    # ── predictions ────────────────────────────────────────────────────
     y_hw   = _ensure_2d(np.load(mdir / args.y_hw))
-    y_true = _ensure_2d(get_mnist_test_labels("mnist"))  # 1-hot labels
+    y_true = _ensure_2d(get_mnist_test_labels("mnist"))
     y_true, y_hw = _align(y_true, y_hw)
 
+    y_ref = None
     if (mdir / args.golden).exists():
         y_ref = _ensure_2d(np.load(mdir / args.golden))
         y_true, y_ref = _align(y_true, y_ref)
-    else:
-        y_ref = None
 
-    print(f"HW vs GT Accuracy    : {accuracy_score(y_true.argmax(1), y_hw.argmax(1)) * 100:.2f}%")
+    print(f"HW vs GT Accuracy    : "
+          f"{accuracy_score(y_true.argmax(1), y_hw.argmax(1)) * 100:.2f}%")
     if y_ref is not None:
-        print(f"HW vs Golden Accuracy: {accuracy_score(y_ref.argmax(1), y_hw.argmax(1)) * 100:.2f}%")
+        print(f"HW vs Golden Accuracy: "
+              f"{accuracy_score(y_ref.argmax(1), y_hw.argmax(1)) * 100:.2f}%")
 
-    # --- latency & throughput -----------------------------------------
-    metric_pairs = [
-        ("COMMS",    mdir / args.latency_comm,    mdir / args.throughput_comm),
-        ("INFERENCE",mdir / args.latency_inf,     mdir / args.throughput_inf),
-    ]
-    for tag, lat_p, thr_p in metric_pairs:
-        if lat_p.exists() and thr_p.exists():
-            lat, thr = np.load(lat_p), np.load(thr_p)
-            print(f"\n[{tag}]")
-            print(f"  Latency   : {lat.mean()*1e3:.4f} ms ± {lat.std()*1e3:.4f}  "
-                  f"(min={lat.min()*1e3:.4f}, max={lat.max()*1e3:.4f})")
-            print(f"  Throughput: {thr.mean():.2f} inf/s ± {thr.std():.2f}")
+    # ── load timing arrays ─────────────────────────────────────────────
+    paths = {
+        "COMMS_lat": mdir / args.latency_comm,
+        "COMMS_thr": mdir / args.throughput_comm,
+        "INF_lat":   mdir / args.latency_inf,
+        "INF_thr":   mdir / args.throughput_inf,
+    }
+    arrays = {k: (np.load(p) if p.exists() else None) for k, p in paths.items()}
 
-    # --- plots ---------------------------------------------------------
-    plot_confusion(confusion_matrix(y_true.argmax(1), y_hw.argmax(1)), mdir / args.cm_name)
+    # ── outlier trimming & masks ───────────────────────────────────────
+    mask_inf = None
+    if arrays["INF_lat"] is not None and args.exclude_pct > 0.0:
+        cut = 100.0 - args.exclude_pct
+        thr = np.percentile(arrays["INF_lat"], cut)
+        mask_inf = arrays["INF_lat"] <= thr
+        arrays["INF_lat"] = arrays["INF_lat"][mask_inf]
+        arrays["INF_thr"] = arrays["INF_thr"][mask_inf]
+
+    if arrays["COMMS_lat"] is not None and args.exclude_pct > 0.0:
+        cut = 100.0 - args.exclude_pct
+        thr = np.percentile(arrays["COMMS_lat"], cut)
+        m = arrays["COMMS_lat"] <= thr
+        arrays["COMMS_lat"], arrays["COMMS_thr"] = arrays["COMMS_lat"][m], arrays["COMMS_thr"][m]
+
+    # ── print stats ────────────────────────────────────────────────────
+    for tag in ("COMMS", "INF"):
+        lat, thr = arrays[f"{tag}_lat"], arrays[f"{tag}_thr"]
+        if lat is None or thr is None:
+            continue
+        lat_ms = lat * 1e3
+        p50, p90, p99 = np.percentile(lat_ms, [50, 90, 99])
+        print(f"\n[{tag}]")
+        print(f"  Latency   : {lat_ms.mean():.4f} ms ± {lat_ms.std():.4f}  "
+              f"(min={lat_ms.min():.4f}, max={lat_ms.max():.4f})")
+        print(f"            : P50={p50:.4f}  P90={p90:.4f}  P99={p99:.4f}")
+        print(f"  Throughput: {thr.mean():.2f} inf/s ± {thr.std():.2f}")
+
+    # ── cycle counts ──────────────────────────────────────────────────
+    cyc_path = mdir / args.cycles
+    if cyc_path.exists():
+        cycles = np.load(cyc_path)
+        if mask_inf is not None:
+            cycles = cycles[mask_inf]          # align with INF mask
+        p50c, p90c, p99c = np.percentile(cycles, [50, 90, 99])
+        print(f"\n[CYCLES]   ({cycles.size} samples)")
+        print(f"  Mean cycles : {cycles.mean():.0f} ± {cycles.std():.0f}  "
+              f"(min={cycles.min():.0f}, max={cycles.max():.0f})")
+        print(f"            : P50={p50c:.0f}  P90={p90c:.0f}  P99={p99c:.0f}")
+        if args.clk_mhz:
+            clk_hz = args.clk_mhz * 1e6
+            lat_us = cycles / clk_hz * 1e6
+            print(f"  Mean time  : {lat_us.mean():.3f} µs "
+                  f"({1/lat_us.mean()*1e6:.2f} inf/s @ {args.clk_mhz:.0f} MHz)")
+
+    # ── plots ─────────────────────────────────────────────────────────
+    plot_confusion(confusion_matrix(y_true.argmax(1), y_hw.argmax(1)),
+                   mdir / args.cm_name)
     plot_multi_roc(y_true, y_hw, mdir / args.roc_name)
     print(f"Confusion matrix saved → {mdir / args.cm_name}")
     print(f"ROC curve saved        → {mdir / args.roc_name}")
