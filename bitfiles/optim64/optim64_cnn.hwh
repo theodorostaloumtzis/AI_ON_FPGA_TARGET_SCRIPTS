@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Thu Aug  7 22:13:50 2025" VIVADOVERSION="2024.2">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Aug 10 14:41:15 2025" VIVADOVERSION="2024.2">
 
   <SYSTEMINFO ARCH="zynquplus" BOARD="xilinx.com:kr260_som:part0:1.1" DEVICE="xck26" NAME="optim64_cnn" PACKAGE="sfvc784" SPEEDGRADE="-2LV"/>
 
@@ -203,9 +203,9 @@
         <PARAMETER NAME="C_HIGHADDR" VALUE="0x8000FFFF"/>
       </PARAMETERS>
       <PORTS>
-        <PORT DIR="I" LEFT="31" NAME="gpio_io_i" RIGHT="0" SIGIS="undef" SIGNAME="hier_0_cycle_counter_0_cycles_o">
+        <PORT DIR="I" LEFT="31" NAME="gpio_io_i" RIGHT="0" SIGIS="undef" SIGNAME="hier_0_cycle_counter_wrapper_0_cycles_o">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_cycle_counter_0" PORT="cycles_o"/>
+            <CONNECTION INSTANCE="hier_0_cycle_counter_wrapper_0" PORT="cycles_o"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="31" NAME="gpio_io_o" RIGHT="0" SIGIS="undef"/>
@@ -367,66 +367,6 @@
           </PORTMAPS>
         </BUSINTERFACE>
       </BUSINTERFACES>
-    </MODULE>
-    <MODULE COREREVISION="7" FULLNAME="/hier_0/and3_0" HWVERSION="1.0" INSTANCE="hier_0_and3_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="and3" VLNV="xilinx.com:user:and3:1.0">
-      <DOCUMENTS/>
-      <PARAMETERS>
-        <PARAMETER NAME="Component_Name" VALUE="optim64_cnn_and3_0_0"/>
-        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
-      </PARAMETERS>
-      <PORTS>
-        <PORT DIR="I" NAME="a" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_m_axis_mm2s_tvalid">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="m_axis_mm2s_tvalid"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" NAME="b" SIGIS="undef" SIGNAME="hier_0_optim64_cnn_stream_0_s_axis_TREADY">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="s_axis_TREADY"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" NAME="c" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_m_axis_mm2s_tlast">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="m_axis_mm2s_tlast"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="O" NAME="y" SIGIS="undef" SIGNAME="hier_0_and3_0_y">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_cycle_counter_0" PORT="start_i"/>
-          </CONNECTIONS>
-        </PORT>
-      </PORTS>
-      <BUSINTERFACES/>
-    </MODULE>
-    <MODULE COREREVISION="7" FULLNAME="/hier_0/and3_1" HWVERSION="1.0" INSTANCE="hier_0_and3_1" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="and3" VLNV="xilinx.com:user:and3:1.0">
-      <DOCUMENTS/>
-      <PARAMETERS>
-        <PARAMETER NAME="Component_Name" VALUE="optim64_cnn_and3_1_0"/>
-        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
-      </PARAMETERS>
-      <PORTS>
-        <PORT DIR="I" NAME="a" SIGIS="undef" SIGNAME="hier_0_optim64_cnn_stream_0_m_axis_TVALID">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="m_axis_TVALID"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" NAME="b" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_s_axis_s2mm_tready">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="s_axis_s2mm_tready"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" NAME="c" SIGIS="undef" SIGNAME="hier_0_optim64_cnn_stream_0_m_axis_TLAST">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="m_axis_TLAST"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="O" NAME="y" SIGIS="undef" SIGNAME="hier_0_and3_1_y">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_cycle_counter_0" PORT="done_i"/>
-          </CONNECTIONS>
-        </PORT>
-      </PORTS>
-      <BUSINTERFACES/>
     </MODULE>
     <MODULE COREREVISION="34" FULLNAME="/hier_0/axi_dma_0" HWVERSION="7.1" INSTANCE="hier_0_axi_dma_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="axi_dma" VLNV="xilinx.com:ip:axi_dma:7.1">
       <DOCUMENTS>
@@ -1491,7 +1431,7 @@
         <PORT DIR="O" NAME="m_axis_mm2s_tlast" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_m_axis_mm2s_tlast">
           <CONNECTIONS>
             <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="s_axis_TLAST"/>
-            <CONNECTION INSTANCE="hier_0_and3_0" PORT="c"/>
+            <CONNECTION INSTANCE="hier_0_cycle_counter_wrapper_0" PORT="start_last"/>
           </CONNECTIONS>
           <CONNECTIONS>
             <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="s_axis_TLAST"/>
@@ -1506,7 +1446,7 @@
         <PORT DIR="O" NAME="m_axis_mm2s_tvalid" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_m_axis_mm2s_tvalid">
           <CONNECTIONS>
             <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="s_axis_TVALID"/>
-            <CONNECTION INSTANCE="hier_0_and3_0" PORT="a"/>
+            <CONNECTION INSTANCE="hier_0_cycle_counter_wrapper_0" PORT="start_valid"/>
           </CONNECTIONS>
           <CONNECTIONS>
             <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="s_axis_TVALID"/>
@@ -1622,7 +1562,7 @@
         <PORT DIR="O" NAME="s_axis_s2mm_tready" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_s_axis_s2mm_tready">
           <CONNECTIONS>
             <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="m_axis_TREADY"/>
-            <CONNECTION INSTANCE="hier_0_and3_1" PORT="b"/>
+            <CONNECTION INSTANCE="hier_0_cycle_counter_wrapper_0" PORT="done_ready"/>
           </CONNECTIONS>
           <CONNECTIONS>
             <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="m_axis_TREADY"/>
@@ -1840,11 +1780,12 @@
         <PERIPHERAL INSTANCE="hier_0_optim64_cnn_stream_0"/>
       </PERIPHERALS>
     </MODULE>
-    <MODULE COREREVISION="7" FULLNAME="/hier_0/cycle_counter_0" HWVERSION="1.0" INSTANCE="hier_0_cycle_counter_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="cycle_counter" VLNV="xilinx.com:user:cycle_counter:1.0">
+    <MODULE COREREVISION="7" FULLNAME="/hier_0/cycle_counter_wrapper_0" HWVERSION="1.0" INSTANCE="hier_0_cycle_counter_wrapper_0" IPTYPE="MONITOR" IS_ENABLE="1" MODCLASS="MONITOR" MODTYPE="cycle_counter_wrapper" VLNV="xilinx.com:user:cycle_counter_wrapper:1.0">
       <DOCUMENTS/>
       <PARAMETERS>
-        <PARAMETER NAME="Component_Name" VALUE="optim64_cnn_cycle_counter_0_0"/>
-        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+        <PARAMETER NAME="Component_Name" VALUE="optim64_cnn_cycle_counter_wrapper_0_0"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="MONITOR"/>
+        <PARAMETER NAME="EDK_SPECIAL" VALUE="MONITOR"/>
       </PARAMETERS>
       <PORTS>
         <PORT DIR="I" NAME="clk" SIGIS="clk" SIGNAME="zynq_ultra_ps_e_0_pl_clk0">
@@ -1852,14 +1793,24 @@
             <CONNECTION INSTANCE="zynq_ultra_ps_e_0" PORT="pl_clk0"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="31" NAME="cycles_o" RIGHT="0" SIGIS="undef" SIGNAME="hier_0_cycle_counter_0_cycles_o">
+        <PORT DIR="O" LEFT="31" NAME="cycles_o" RIGHT="0" SIGIS="undef" SIGNAME="hier_0_cycle_counter_wrapper_0_cycles_o">
           <CONNECTIONS>
             <CONNECTION INSTANCE="axi_gpio_0" PORT="gpio_io_i"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="done_i" SIGIS="undef" SIGNAME="hier_0_and3_1_y">
+        <PORT DIR="I" NAME="done_last" SIGIS="undef" SIGNAME="hier_0_optim64_cnn_stream_0_m_axis_TLAST">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_and3_1" PORT="y"/>
+            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="m_axis_TLAST"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="done_ready" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_s_axis_s2mm_tready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="s_axis_s2mm_tready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="done_valid" SIGIS="undef" SIGNAME="hier_0_optim64_cnn_stream_0_m_axis_TVALID">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="m_axis_TVALID"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="rst_n" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="proc_sys_reset_0_peripheral_aresetn">
@@ -1867,17 +1818,55 @@
             <CONNECTION INSTANCE="proc_sys_reset_0" PORT="peripheral_aresetn"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="start_i" SIGIS="undef" SIGNAME="hier_0_and3_0_y">
+        <PORT DIR="I" NAME="start_last" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_m_axis_mm2s_tlast">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="hier_0_and3_0" PORT="y"/>
+            <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="m_axis_mm2s_tlast"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="start_ready" SIGIS="undef" SIGNAME="hier_0_optim64_cnn_stream_0_s_axis_TREADY">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="s_axis_TREADY"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="start_valid" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_m_axis_mm2s_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="m_axis_mm2s_tvalid"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
-      <BUSINTERFACES/>
+      <BUSINTERFACES>
+        <BUSINTERFACE BUSNAME="__NOC__" NAME="start_in" TYPE="MONITOR" VLNV="xilinx.com:interface:gpio:1.0">
+          <PORTMAPS>
+            <PORTMAP LOGICAL="TRI_I" PHYSICAL="start_last"/>
+            <PORTMAP LOGICAL="TRI_O" PHYSICAL="start_ready"/>
+            <PORTMAP LOGICAL="TRI_T" PHYSICAL="start_valid"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+        <BUSINTERFACE BUSNAME="__NOC__" NAME="done_in" TYPE="MONITOR" VLNV="xilinx.com:interface:gpio:1.0">
+          <PORTMAPS>
+            <PORTMAP LOGICAL="TRI_I" PHYSICAL="done_last"/>
+            <PORTMAP LOGICAL="TRI_O" PHYSICAL="done_ready"/>
+            <PORTMAP LOGICAL="TRI_T" PHYSICAL="done_valid"/>
+          </PORTMAPS>
+        </BUSINTERFACE>
+      </BUSINTERFACES>
     </MODULE>
-    <MODULE COREREVISION="3" FULLNAME="/hier_0/optim64_cnn_stream_0" HWVERSION="1.0" INSTANCE="hier_0_optim64_cnn_stream_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="optim64_cnn_stream" VLNV="xilinx.com:user:optim64_cnn_stream:1.0">
+    <MODULE COREREVISION="1" FULLNAME="/hier_0/optim64_cnn_stream_0" HWVERSION="1.1" INSTANCE="hier_0_optim64_cnn_stream_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="optim64_cnn_stream" VLNV="xilinx.com:user:optim64_cnn_stream:1.1">
       <DOCUMENTS/>
       <PARAMETERS>
+        <PARAMETER NAME="ap_ST_fsm_state1" VALUE="&quot;0000000000001&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state2" VALUE="&quot;0000000000010&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state3" VALUE="&quot;0000000000100&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state4" VALUE="&quot;0000000001000&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state5" VALUE="&quot;0000000010000&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state6" VALUE="&quot;0000000100000&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state7" VALUE="&quot;0000001000000&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state8" VALUE="&quot;0000010000000&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state9" VALUE="&quot;0000100000000&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state10" VALUE="&quot;0001000000000&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state11" VALUE="&quot;0010000000000&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state12" VALUE="&quot;0100000000000&quot;"/>
+        <PARAMETER NAME="ap_ST_fsm_state13" VALUE="&quot;1000000000000&quot;"/>
         <PARAMETER NAME="Component_Name" VALUE="optim64_cnn_optim64_cnn_stream_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
@@ -1908,7 +1897,7 @@
           <CONNECTIONS>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="s_axis_s2mm_tlast"/>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="s_axis_s2mm_tlast"/>
-            <CONNECTION INSTANCE="hier_0_and3_1" PORT="c"/>
+            <CONNECTION INSTANCE="hier_0_cycle_counter_wrapper_0" PORT="done_last"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="m_axis_TREADY" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_s_axis_s2mm_tready">
@@ -1923,7 +1912,7 @@
           <CONNECTIONS>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="s_axis_s2mm_tvalid"/>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="s_axis_s2mm_tvalid"/>
-            <CONNECTION INSTANCE="hier_0_and3_1" PORT="a"/>
+            <CONNECTION INSTANCE="hier_0_cycle_counter_wrapper_0" PORT="done_valid"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="63" NAME="s_axis_TDATA" RIGHT="0" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_m_axis_mm2s_tdata">
@@ -1954,7 +1943,7 @@
           <CONNECTIONS>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="m_axis_mm2s_tready"/>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="m_axis_mm2s_tready"/>
-            <CONNECTION INSTANCE="hier_0_and3_0" PORT="b"/>
+            <CONNECTION INSTANCE="hier_0_cycle_counter_wrapper_0" PORT="start_ready"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="s_axis_TVALID" SIGIS="undef" SIGNAME="hier_0_axi_dma_0_m_axis_mm2s_tvalid">
@@ -2049,9 +2038,9 @@
             <CONNECTION INSTANCE="smartconnect_0" PORT="aresetn"/>
             <CONNECTION INSTANCE="smartconnect_1" PORT="aresetn"/>
             <CONNECTION INSTANCE="axi_gpio_0" PORT="s_axi_aresetn"/>
-            <CONNECTION INSTANCE="hier_0_cycle_counter_0" PORT="rst_n"/>
-            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="ap_rst_n"/>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="axi_resetn"/>
+            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="ap_rst_n"/>
+            <CONNECTION INSTANCE="hier_0_cycle_counter_wrapper_0" PORT="rst_n"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="0" NAME="peripheral_reset" POLARITY="ACTIVE_HIGH" RIGHT="0" SIGIS="rst"/>
@@ -5085,10 +5074,10 @@
             <CONNECTION INSTANCE="axi_gpio_0" PORT="s_axi_aclk"/>
             <CONNECTION INSTANCE="smartconnect_0" PORT="aclk"/>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="m_axi_mm2s_aclk"/>
-            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="ap_clk"/>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="m_axi_s2mm_aclk"/>
             <CONNECTION INSTANCE="hier_0_axi_dma_0" PORT="s_axi_lite_aclk"/>
-            <CONNECTION INSTANCE="hier_0_cycle_counter_0" PORT="clk"/>
+            <CONNECTION INSTANCE="hier_0_optim64_cnn_stream_0" PORT="ap_clk"/>
+            <CONNECTION INSTANCE="hier_0_cycle_counter_wrapper_0" PORT="clk"/>
             <CONNECTION INSTANCE="smartconnect_1" PORT="aclk"/>
             <CONNECTION INSTANCE="proc_sys_reset_0" PORT="slowest_sync_clk"/>
             <CONNECTION INSTANCE="zynq_ultra_ps_e_0" PORT="maxihpm0_lpd_aclk"/>

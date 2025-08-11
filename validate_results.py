@@ -135,10 +135,10 @@ def main() -> None:
         y_true, y_ref = _align(y_true, y_ref)
 
     print(f"HW vs GT Accuracy    : "
-          f"{accuracy_score(y_true.argmax(1), y_hw.argmax(1)) * 100:.2f}%")
+          f"{accuracy_score(y_true.argmax(1), y_hw.argmax(1)) * 100:.6f}%")
     if y_ref is not None:
         print(f"HW vs Golden Accuracy: "
-              f"{accuracy_score(y_ref.argmax(1), y_hw.argmax(1)) * 100:.2f}%")
+              f"{accuracy_score(y_ref.argmax(1), y_hw.argmax(1)) * 100:.6f}%")
 
     # ── load timing arrays ─────────────────────────────────────────────
     paths = {
