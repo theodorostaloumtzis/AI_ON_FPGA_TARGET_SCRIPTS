@@ -1,14 +1,13 @@
-
 #!/usr/bin/env python3
 """
-Run the notebook workflow as a single script, with PTY-safe logging that
+Run the full workflow as a single script, with PTY-safe logging that
 preserves tqdm progress bars while teeing output to a timestamped log file.
 """
 import os
 import sys
 import subprocess
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal, Optional, Sequence
 from datetime import datetime
 
 # --- Project paths ---
@@ -31,8 +30,7 @@ def log_print(*args, **kwargs):
     print(*args, **kwargs, file=_log_text)
 
 # --- Utility: run a command via PTY, tee to terminal + log ---
-
-def run(cmd: list[str], *, use_pty: bool = True) -> int:
+def run(cmd: Sequence[str], *, use_pty: bool = True) -> int:
     """
     Run a subprocess and tee its output to console + log.
     - When use_pty=True, attach a PTY to preserve tqdm progress bars.
@@ -41,7 +39,7 @@ def run(cmd: list[str], *, use_pty: bool = True) -> int:
     """
     log_print(f"[cmd] {' '.join(cmd)}")
     if use_pty:
-        import pty, os, select, sys, errno
+        import pty, select, errno
         master_fd, slave_fd = pty.openpty()
         try:
             proc = subprocess.Popen(
@@ -50,6 +48,8 @@ def run(cmd: list[str], *, use_pty: bool = True) -> int:
                 stdout=slave_fd,
                 stderr=slave_fd,
                 close_fds=True,
+                cwd=PWD,
+                env={**os.environ, "PYTHONUNBUFFERED": "1"},
             )
         finally:
             os.close(slave_fd)
@@ -57,9 +57,7 @@ def run(cmd: list[str], *, use_pty: bool = True) -> int:
         with open(LOG_FILE, "ab", buffering=0) as lf:
             try:
                 while True:
-                    # If process is done AND no data available, exit
                     if proc.poll() is not None:
-                        # Drain any remaining readable data without blocking
                         r, _, _ = select.select([master_fd], [], [], 0)
                         if master_fd not in r:
                             break
@@ -68,7 +66,7 @@ def run(cmd: list[str], *, use_pty: bool = True) -> int:
                         try:
                             data = os.read(master_fd, 4096)
                         except OSError as e:
-                            if e.errno in (errno.EIO, 5):  # Input/output error after child exits
+                            if e.errno in (errno.EIO, 5):  # child exited
                                 break
                             raise
                         if not data:
@@ -79,15 +77,17 @@ def run(cmd: list[str], *, use_pty: bool = True) -> int:
                 os.close(master_fd)
         return proc.wait()
     else:
-        # Non-PTY path (no tqdm animations, but robust)
         proc = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
+            cwd=PWD,
+            env={**os.environ, "PYTHONUNBUFFERED": "1"},
         )
         with open(LOG_FILE, "a", buffering=1) as lf:
+            assert proc.stdout is not None
             for line in proc.stdout:
                 sys.stdout.write(line)
                 lf.write(line)
@@ -104,7 +104,7 @@ def cd_project() -> None:
 
 # --- Notebook functions, adapted ---
 def clear_bitfile() -> None:
-    # No need for PTY here; avoid EIO cases on very short scripts
+    # Simple script, no need for PTY
     run([sys.executable, "clear_global_state.py"], use_pty=False)
 
 def run_inference(
@@ -113,7 +113,18 @@ def run_inference(
     *,
     pack: bool = False,
     cycles: Literal["auto", "on", "off"] = "auto",
+    cycle_type: Literal["core", "e2e", "both"] = "core",
+    # Power options (mirrors on_target.py defaults)
+    power_off: bool = False,
+    power_poll: float = 0.07,
+    power_frames: int = 128,
+    power_rail: Optional[list[str]] = None,
+    idle_seconds: float = 1.0,
+    no_progress: bool = False,
 ) -> None:
+    """
+    Launch on_target.py with the new CLI. PTY is enabled to preserve tqdm.
+    """
     if not bitfile:
         raise ValueError("You must supply a bitfile path.")
     if cycles not in {"auto", "on", "off"}:
@@ -127,10 +138,24 @@ def run_inference(
         "-b", bitfile,
         "-m", str(mdir),
         "--cycles", cycles,
+        "--cycle-type", cycle_type,
+        "--power-poll", str(power_poll),
+        "--power-frames", str(power_frames),
+        "--idle-seconds", str(idle_seconds),
     ]
     if pack:
         cmd.append("-pd")
-    run(cmd)
+    if power_off:
+        cmd.append("--power-off")
+    if no_progress:
+        cmd.append("--no-progress")
+    if power_rail:
+        for pr in power_rail:
+            cmd += ["--power-rail", pr]
+
+    rc = run(cmd, use_pty=True)
+    if rc != 0:
+        raise RuntimeError(f"on_target.py exited with code {rc}")
 
 def validate_results(
     metrics_dir: str = "metrics/",
@@ -138,17 +163,36 @@ def validate_results(
     clk_mhz: Optional[float] = None,
     exclude_pct: float = 0.0,
     show: bool = True,
-    cycles_file: str = "cycles_raw.npy",
+    # Legacy core cycles name; can be overridden by explicit files
+    cycles_file: Optional[str] = "cycles_core.npy",
+    cycles_core_file: Optional[str] = None,
+    cycles_e2e_file: Optional[str] = None,
+    # Optional power traces
+    power_abs: Optional[str] = "power_abs.npy",
+    power_dyn: Optional[str] = "power_dyn.npy",
 ) -> None:
+    """
+    Launch validate_results.py, compatible with the refactor.
+    """
     mdir = Path(metrics_dir).expanduser().resolve()
     if not mdir.exists():
         raise FileNotFoundError(f"{mdir} does not exist")
 
+    core_path = cycles_core_file if cycles_core_file is not None else cycles_file
+    e2e_path  = cycles_e2e_file
+
     cmd = [
         sys.executable, "validate_results.py",
         "-m", str(mdir),
-        "--cycles", cycles_file,
     ]
+    if core_path:
+        cmd += ["--cycles-core", core_path]
+    if e2e_path:
+        cmd += ["--cycles-e2e", e2e_path]
+    if power_abs:
+        cmd += ["--power-abs", power_abs]
+    if power_dyn:
+        cmd += ["--power-dyn", power_dyn]
     if clk_mhz is not None:
         cmd += ["--clk-mhz", str(clk_mhz)]
     if exclude_pct > 0.0:
@@ -156,55 +200,75 @@ def validate_results(
     if not show:
         cmd.append("--no-show")
 
-    run(cmd)
+    rc = run(cmd, use_pty=True)  # PTY so matplotlib/tqdm output is clean
+    if rc != 0:
+        raise RuntimeError(f"validate_results.py exited with code {rc}")
 
 def assemble_paths():
     bitfiles = PWD / "bitfiles"
     return {
-        "baseline_bit": str(bitfiles / "baseline" / "baseline_cnn.bit"),
-        "quant_bit": str(bitfiles / "quantized" / "quantized_cnn.bit"),
-        "optim_bit": str(bitfiles / "optim" / "optim_cnn.bit"),
-        "optim64_bit": str(bitfiles / "optim64" / "optim64_cnn.bit"),
+        "baseline_bit":    str(bitfiles / "baseline" / "baseline_cnn.bit"),
+        "quant_bit":       str(bitfiles / "quantized" / "quant_cnn.bit"),
+        "optim_bit":       str(bitfiles / "optim" / "optim_cnn.bit"),
+        "optim64_bit":     str(bitfiles / "optim64" / "optim64_cnn.bit"),
         "metrics_baseline": str(PWD / "metrics" / "baseline"),
-        "metrics_quant": str(PWD / "metrics" / "quant"),
-        "metrics_optim": str(PWD / "metrics" / "optim"),
-        "metrics_optim64": str(PWD / "metrics" / "optim64"),
+        "metrics_quant":    str(PWD / "metrics" / "quant"),
+        "metrics_optim":    str(PWD / "metrics" / "optim"),
+        "metrics_optim64":  str(PWD / "metrics" / "optim64"),
     }
 
 def main() -> None:
     cd_project()
     p = assemble_paths()
 
+    # Baseline
     log_print("Running inference for baseline configuration...")
-    log_print("Clearing bitfile...")
     clear_bitfile()
-    log_print("Running inference...")
-    run_inference(p["baseline_bit"], metrics_dir=p["metrics_baseline"])
-
-    log_print("Running inference for quantized configuration...")
-    log_print("Clearing bitfile...")
-    clear_bitfile()
-    log_print("Running inference...")
-    run_inference(p["quant_bit"], metrics_dir=p["metrics_quant"])
-
+    run_inference(
+        p["baseline_bit"],
+        metrics_dir=p["metrics_baseline"],
+        cycles="auto",
+        cycle_type="core",
+        # Uncomment if you want to disable power for speed:
+        # power_off=True,
+    )
     validate_results(metrics_dir=p["metrics_baseline"], clk_mhz=150, exclude_pct=1.0)
+
+    # Quantized
+    log_print("Running inference for quantized configuration...")
+    clear_bitfile()
+    run_inference(
+        p["quant_bit"],
+        metrics_dir=p["metrics_quant"],
+        cycles="auto",
+        cycle_type="core",
+    )
     validate_results(metrics_dir=p["metrics_quant"], clk_mhz=150, exclude_pct=1.0)
 
+    # Optimized (uint16 stream)
     log_print("Running inference for optimized configuration (optim)...")
-    log_print("Clearing bitfile...")
     clear_bitfile()
-    log_print("Running inference...")
-    run_inference(p["optim_bit"], metrics_dir=p["metrics_optim"])
-    validate_results(metrics_dir=p["metrics_optim"], clk_mhz=150, exclude_pct=1.0)
+    run_inference(
+        p["optim_bit"],
+        metrics_dir=p["metrics_optim"],
+        cycles="auto",
+        cycle_type="core",
+    )
+    validate_results(metrics_dir=p["metrics_optim"], clk_mhz=200, exclude_pct=1.0)
 
+    # Optimized (packed uint64 stream)
     log_print("Running inference for optimized configuration (optim64)...")
-    log_print("Clearing bitfile...")
     clear_bitfile()
-    log_print("Running inference...")
-    run_inference(p["optim64_bit"], metrics_dir=p["metrics_optim64"], pack=True)
-    validate_results(metrics_dir=p["metrics_optim64"], clk_mhz=150, exclude_pct=1.0)
+    run_inference(
+        p["optim64_bit"],
+        metrics_dir=p["metrics_optim64"],
+        pack=True,
+        cycles="auto",
+        cycle_type="core",
+    )
+    validate_results(metrics_dir=p["metrics_optim64"], clk_mhz=200, exclude_pct=1.0)
 
-    validate_results(metrics_dir=p["metrics_optim"], clk_mhz=150, exclude_pct=0.0)
+    
 
 if __name__ == "__main__":
     try:

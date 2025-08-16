@@ -1,37 +1,58 @@
+# axi_stream_driver.py
+from __future__ import annotations
+
 from datetime import datetime
+from typing import Optional, Tuple, Dict, Any, Union
 import numpy as np
 from pynq import Overlay, allocate
-from pynq.lib import AxiGPIO        
+from pynq.lib import AxiGPIO
+
 
 class NeuralNetworkOverlay(Overlay):
     """
-    Overlay wrapper for a streaming-CNN core.
+    Overlay wrapper for a streaming-CNN core with AXI DMA and optional
+    cycle counters on AXI GPIOs.
 
-    It will look for an AXI-GPIO (default instance name ``axi_gpio_0``) whose
-    Channel-1 input is driven by a 32-bit cycle counter.  If the GPIO is not
-    found the overlay falls back gracefully and all cycle-related calls are
-    no-ops.
+    Expected default BD (names can be overridden):
+      - hier_0/axi_dma_0            : DMA (sendchannel/recvchannel)
+      - axi_gpio_0 channel-1 (in)   : cycles_core_out[31:0]
+      - axi_gpio_1 channel-1 (in)   : cycles_e2e_out[31:0]
+
+    You can also map both counters to a *single* AXI-GPIO by choosing different
+    channels (e.g., core=ch1, e2e=ch2).
 
     Parameters
     ----------
     bitfile_name : str
     x_shape, y_shape : tuple[int]
-        Shapes of input and output tensors.
-    dtype : numpy dtype (default: uint16)
-        Precision of the **input** buffer.
-    gpio_name : str (default: "axi_gpio_0")
-        Instance name of the GPIO that carries the cycle-counter bus.
-    enable_cycles : bool | 'auto' (default: 'auto')
-        * 'auto' → enable counting only if the GPIO is found
-        * True   → raise if the GPIO is missing (you expect it!)
-        * False  → never read cycles, even if the GPIO exists
+        DMA buffer shapes (samples/words).
+    dtype : numpy dtype
+        Input buffer dtype (uint16 or uint64 depending on packing).
+    enable_cycles : {'auto','on','off', True, False}
+        - 'auto'/True : try to bind counters; proceed even if missing
+        - 'on'        : require at least one counter; raise if none found
+        - 'off'/False : never bind/read counters
+    gpio_core_name : str | None
+        IP instance that carries the *core* cycles (default 'axi_gpio_0').
+    gpio_core_channel : {1,2}
+        AXI-GPIO channel index for the core counter (default 1).
+    gpio_e2e_name : str | None
+        IP instance that carries the *e2e* cycles (default 'axi_gpio_1').
+    gpio_e2e_channel : {1,2}
+        AXI-GPIO channel index for the e2e counter (default 1).
     """
 
-    def __init__(self, bitfile_name,
-                 x_shape, y_shape,
-                 dtype=np.uint16,
-                 gpio_name='axi_gpio_0',
-                 enable_cycles='auto',
+    def __init__(self,
+                 bitfile_name: str,
+                 x_shape: Tuple[int, ...],
+                 y_shape: Tuple[int, ...],
+                 dtype: np.dtype = np.uint16,
+                 enable_cycles: Union[str, bool] = "auto",
+                 *,
+                 gpio_core_name: Optional[str] = "axi_gpio_0",
+                 gpio_core_channel: int = 1,
+                 gpio_e2e_name: Optional[str] = "axi_gpio_1",
+                 gpio_e2e_channel: int = 1,
                  dtbo=None, download=True,
                  ignore_version=False, device=None):
 
@@ -40,61 +61,88 @@ class NeuralNetworkOverlay(Overlay):
                          ignore_version=ignore_version,
                          device=device)
 
-        # ─────────────────────────────  DMA  ────────────────────────────────── #
-        self.sendchannel = self.hier_0.axi_dma_0.sendchannel
-        self.recvchannel = self.hier_0.axi_dma_0.recvchannel
+        # ─────────────────────────────  DMA  ─────────────────────────────── #
+        self.dma = self.hier_0.axi_dma_0
+        self.sendchannel = self.dma.sendchannel
+        self.recvchannel = self.dma.recvchannel
 
-        # ────────────────────  Optional cycle counter  ──────────────────────── #
-        self._cycle_ch1 = None
-        if enable_cycles in (True, 'auto'):
+        # ─────────────────────  Optional cycle counters  ─────────────────── #
+        # normalize enable flag
+        if enable_cycles is True:
+            enable_mode = "auto"
+        elif enable_cycles is False:
+            enable_mode = "off"
+        else:
+            enable_mode = str(enable_cycles).lower()
+
+        self._cycle_ch: Dict[str, Any] = {}
+
+        def _bind(label: str,
+                  ip_name: Optional[str],
+                  ch_index: int):
+            if not ip_name or enable_mode == "off":
+                return
             try:
-                gpio = getattr(self, gpio_name)
-                ch1 = gpio.channel1          # input channel
-                ch1.setdirection('in')
-                self._cycle_ch1 = ch1
+                gpio: AxiGPIO = getattr(self, ip_name)
             except AttributeError:
-                if enable_cycles is True:
-                    raise RuntimeError(f"Cycle-counter GPIO '{gpio_name}' "
-                                       "not found in the bitstream.")
-                # else: auto-disable silently
+                return
+            # choose channel
+            ch = gpio.channel1 if ch_index == 1 else gpio.channel2
+            ch.setdirection('in')
+            self._cycle_ch[label] = ch
 
-        self.cycles_enabled = self._cycle_ch1 is not None
+        _bind("core", gpio_core_name, gpio_core_channel)
+        _bind("e2e",  gpio_e2e_name,  gpio_e2e_channel)
 
-        # ─────────────────────────  Buffers  ───────────────────────────────── #
+        if enable_mode == "on" and not self._cycle_ch:
+            raise RuntimeError(
+                "Cycle counters requested (enable_cycles='on') "
+                "but no AXI-GPIO counter could be bound."
+            )
+
+        self.cycles_enabled = bool(self._cycle_ch)
+
+        # ─────────────────────────  Buffers  ─────────────────────────────── #
         self.input_buffer  = allocate(shape=x_shape, dtype=dtype)
         self.output_buffer = allocate(shape=y_shape, dtype=np.uint16)
 
     # --------------------------------------------------------------------- #
-    # helpers
     @staticmethod
     def _perf_stats(t0, t1, t2, n=1):
         dt_comm = (t2 - t0).total_seconds()
         dt_inf  = (t2 - t1).total_seconds()
-        return (dt_comm, n/dt_comm,
-                dt_inf,  n/dt_inf)
+        return (dt_comm, n/dt_comm, dt_inf, n/dt_inf)
+
+    def _read_core(self) -> Optional[int]:
+        ch = self._cycle_ch.get("core")
+        return int(ch.read()) if ch is not None else None
+
+    def _read_e2e(self) -> Optional[int]:
+        ch = self._cycle_ch.get("e2e")
+        return int(ch.read()) if ch is not None else None
 
     # --------------------------------------------------------------------- #
-    # public API
-    def enable_cycle_counter(self, flag=True):
-        """Enable / disable reading the hardware cycle counter on the fly."""
-        self.cycles_enabled = bool(flag and self._cycle_ch1)
-
-    def predict(self, X, *, encode=None, decode=None,
-                profile=False, return_cycles=True):
+    def predict(self, X,
+                *, encode=None, decode=None,
+                profile: bool = False,
+                return_cycles: Union[bool, str] = False):
         """
-        Runs one inference and returns:
+        Run one inference and return a tuple that matches the CLI expectations.
 
-            output [, cycles] [, dt_comm, rate_comm, dt_inf, rate_inf]
-
-        depending on *return_cycles* and *profile* flags.
+        Return layout:
+          cycle_type == "both": (y, (cyc_core, cyc_e2e), dtc, rc, dti, ri)
+          cycle_type == "e2e" : (y, cyc_e2e,               dtc, rc, dti, ri)
+          cycle_type == "core": (y, cyc_core,              dtc, rc, dti, ri)
+          cycle_type == False : (y,                        dtc, rc, dti, ri)
         """
+        # optional encode
         if encode is not None:
             X = encode(X)
 
         if profile:
             t0 = datetime.now()
 
-        # --- kick off DMA -------------------------------------------------- #
+        # queue DMA in both directions
         self.input_buffer[:] = X
         self.sendchannel.transfer(self.input_buffer)
         self.recvchannel.transfer(self.output_buffer)
@@ -105,22 +153,32 @@ class NeuralNetworkOverlay(Overlay):
 
         self.recvchannel.wait()
 
-        # --- grab cycle count (if enabled) --------------------------------- #
-        cycles = None
-        if self.cycles_enabled and return_cycles:
-            cycles = self._cycle_ch1.read()
-
+        # copy & optional decode
+        y = self.output_buffer.copy()
         if decode is not None:
-            self.output_buffer[:] = decode(self.output_buffer)
+            y = decode(y)
+
+        # default: don't include cycles
+        cyc_ret: Any = None
+        if self.cycles_enabled and return_cycles:
+            mode = str(return_cycles).lower() if isinstance(return_cycles, str) else "both"
+            if mode == "both":
+                cyc_ret = (self._read_core(), self._read_e2e())
+            elif mode == "e2e":
+                cyc_ret = self._read_e2e()
+            else:  # "core" or anything else → core
+                cyc_ret = self._read_core()
 
         if profile:
             t2 = datetime.now()
+            dtc, rc, dti, ri = self._perf_stats(t0, t1, t2, 1)
+        else:
+            # keep API shape identical even if profile=False was ever used
+            dtc = rc = dti = ri = None
 
-        # --- package results ---------------------------------------------- #
-        result = [self.output_buffer.copy()]
-        if return_cycles and self.cycles_enabled:
-            result.append(cycles)
-        if profile:
-            result.extend(self._perf_stats(t0, t1, t2, 1))
-
-        return tuple(result) if len(result) > 1 else result[0]
+        # build return tuple in the exact order the script unpacks
+        if self.cycles_enabled and return_cycles:
+            # both/e2e/core already encoded in cyc_ret
+            return (y, cyc_ret, dtc, rc, dti, ri)
+        else:
+            return (y, dtc, rc, dti, ri)

@@ -1,0 +1,333 @@
+[cwd] /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS
+Discovered 6 RF models:
+  - rfmodel0_cnn.bit
+  - rfmodel25_cnn.bit
+  - rfmodel50_cnn.bit
+  - rfmodel100_cnn.bit
+  - rfmodel6_25_cnn.bit
+  - rfmodel12_5_cnn.bit
+
+────────────────────────────────────────────────────────
+[RUN] rfmodel0_cnn.bit
+Clearing PL/driver state...
+[cmd] /usr/local/share/pynq-venv/bin/python clear_global_state.py
+Running inference (on_target.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python on_target.py -b /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/bitfiles/rfmodels/rfmodel0_cnn.bit -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel0_cnn --cycles auto --cycle-type core --power-poll 0.07 --power-frames 128 --idle-seconds 1.0
+Validating results (validate_results.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python validate_results.py -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel0_cnn --clk-mhz 150.0 --exclude-pct 1.0 --no-show --cycles-core cycles_core.npy --cycles-e2e cycles_e2e.npy --power-abs power_abs.npy --power-dyn power_dyn.npy
+
+────────────────────────────────────────────────────────
+[RUN] rfmodel25_cnn.bit
+Clearing PL/driver state...
+[cmd] /usr/local/share/pynq-venv/bin/python clear_global_state.py
+Running inference (on_target.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python on_target.py -b /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/bitfiles/rfmodels/rfmodel25_cnn.bit -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel25_cnn --cycles auto --cycle-type core --power-poll 0.07 --power-frames 128 --idle-seconds 1.0
+Validating results (validate_results.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python validate_results.py -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel25_cnn --clk-mhz 150.0 --exclude-pct 1.0 --no-show --cycles-core cycles_core.npy --cycles-e2e cycles_e2e.npy --power-abs power_abs.npy --power-dyn power_dyn.npy
+
+────────────────────────────────────────────────────────
+[RUN] rfmodel50_cnn.bit
+Clearing PL/driver state...
+[cmd] /usr/local/share/pynq-venv/bin/python clear_global_state.py
+Running inference (on_target.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python on_target.py -b /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/bitfiles/rfmodels/rfmodel50_cnn.bit -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel50_cnn --cycles auto --cycle-type core --power-poll 0.07 --power-frames 128 --idle-seconds 1.0
+Validating results (validate_results.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python validate_results.py -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel50_cnn --clk-mhz 150.0 --exclude-pct 1.0 --no-show --cycles-core cycles_core.npy --cycles-e2e cycles_e2e.npy --power-abs power_abs.npy --power-dyn power_dyn.npy
+
+────────────────────────────────────────────────────────
+[RUN] rfmodel100_cnn.bit
+Clearing PL/driver state...
+[cmd] /usr/local/share/pynq-venv/bin/python clear_global_state.py
+Running inference (on_target.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python on_target.py -b /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/bitfiles/rfmodels/rfmodel100_cnn.bit -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel100_cnn --cycles auto --cycle-type core --power-poll 0.07 --power-frames 128 --idle-seconds 1.0
+Validating results (validate_results.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python validate_results.py -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel100_cnn --clk-mhz 150.0 --exclude-pct 1.0 --no-show --cycles-core cycles_core.npy --cycles-e2e cycles_e2e.npy --power-abs power_abs.npy --power-dyn power_dyn.npy
+
+────────────────────────────────────────────────────────
+[RUN] rfmodel6_25_cnn.bit
+Clearing PL/driver state...
+[cmd] /usr/local/share/pynq-venv/bin/python clear_global_state.py
+Running inference (on_target.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python on_target.py -b /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/bitfiles/rfmodels/rfmodel6_25_cnn.bit -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel6_25_cnn --cycles auto --cycle-type core --power-poll 0.07 --power-frames 128 --idle-seconds 1.0
+Validating results (validate_results.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python validate_results.py -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel6_25_cnn --clk-mhz 150.0 --exclude-pct 1.0 --no-show --cycles-core cycles_core.npy --cycles-e2e cycles_e2e.npy --power-abs power_abs.npy --power-dyn power_dyn.npy
+
+────────────────────────────────────────────────────────
+[RUN] rfmodel12_5_cnn.bit
+Clearing PL/driver state...
+[cmd] /usr/local/share/pynq-venv/bin/python clear_global_state.py
+Running inference (on_target.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python on_target.py -b /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/bitfiles/rfmodels/rfmodel12_5_cnn.bit -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel12_5_cnn --cycles auto --cycle-type core --power-poll 0.07 --power-frames 128 --idle-seconds 1.0
+Validating results (validate_results.py)…
+[cmd] /usr/local/share/pynq-venv/bin/python validate_results.py -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel12_5_cnn --clk-mhz 150.0 --exclude-pct 1.0 --no-show --cycles-core cycles_core.npy --cycles-e2e cycles_e2e.npy --power-abs power_abs.npy --power-dyn power_dyn.npy
+
+All RF models processed. Logs at: /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/logs/run_rf_2025-08-16_23-43-25.log
+ 9984/10000 [00:15<00:00, 696.52sample/s]Total inferences: 100% 10000/10000 [00:15<00:00, 656.08sample/s]
+4. Accuracy  : 98.02%
+5. Metrics saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel0_cnn
+   (core cycles stored in cycles_core.npy)
+   (dynamic power, per-window)  mean=432.55 mW, P90=853.08 mW
+   (absolute power trace stored in power_abs.npy)
+   (dynamic-only power trace stored in power_dyn.npy)
+   (per-window stats stored in power_windows.npy)
+HW vs GT Accuracy    : 98.020000%
+
+[COMMS]
+  Latency   : 0.4831 ms ± 0.0591  (min=0.4230, max=0.9390)
+            : P50=0.4650  P90=0.5410  P99=0.7720
+  Throughput: 2093.38 inf/s ± 195.17
+
+[INF]
+  Latency   : 0.1895 ms ± 0.0231  (min=0.1620, max=0.3310)
+            : P50=0.1820  P90=0.2180  P99=0.2810
+  Throughput: 5342.00 inf/s ± 535.38
+
+[CYCLES core]   (9901 samples)
+  Mean cycles : 2616 ± 0  (min=2616, max=2638)
+            : P50=2616  P90=2616  P99=2616
+  Mean time  : 17.440 µs (57339.33 inf/s @ 150 MHz)
+
+[POWER absolute]   (156 samples)
+  Mean  : 3998.08 mW ± 315.30
+  Min   : 3270.00 mW
+  Max   : 4630.00 mW
+  Peak  : 4484.50 mW (P99)
+
+[POWER dynamic]   (156 samples)
+  Mean  : 468.89 mW ± 280.39
+  Min   : 0.00 mW
+  Max   : 1083.08 mW
+  Peak  : 937.58 mW (P99)
+Power trace saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel0_cnn/power_trace.png
+Confusion matrix saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel0_cnn/confusion_matrix.png
+ROC curve saved        → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel0_cnn/roc_curve.png
+1. Loading and quantising MNIST test set…
+   Samples: 10000  Features: 784
+2. Programming FPGA bitstream…
+Power rails:
+  - /sys/class/hwmon/hwmon2/power1_input
+3. Running inference…
+Total inferences:   0% 0/10000 [00:00<?, ?sample/s]Idle baseline power: 3959.2 mW across 1 rail(s)
+Total inferences:   1% 128/10000 [00:01<01:40, 98.15sample/s]Total inferences:   3% 256/10000 [00:01<00:51, 190.77sample/s]Total inferences:   4% 384/10000 [00:01<00:35, 271.91sample/s]Total inferences:   5% 512/10000 [00:01<00:26, 364.12sample/s]Total inferences:   6% 640/10000 [00:02<00:21, 443.62sample/s]Total inferences:   8% 768/10000 [00:02<00:19, 482.66sample/s]Total inferences:   9% 896/10000 [00:02<00:17, 511.93sample/s]Total inferences:  10% 1024/10000 [00:02<00:16, 528.71sample/s]Total inferences:  12% 1152/10000 [00:03<00:16, 535.45sample/s]Total inferences:  13% 1280/10000 [00:03<00:14, 593.71sample/s]Total inferences:  14% 1408/10000 [00:03<00:14, 578.21sample/s]Total inferences:  15% 1536/10000 [00:03<00:14, 570.77sample/s]Total inferences:  17% 1664/10000 [00:03<00:14, 589.41sample/s]Total inferences:  18% 1792/10000 [00:04<00:14, 576.40sample/s]Total inferences:  19% 1920/10000 [00:04<00:13, 597.85sample/s]Total inferences:  20% 2048/10000 [00:04<00:13, 590.84sample/s]Total inferences:  22% 2176/10000 [00:04<00:13, 577.09sample/s]Total inferences:  23% 2304/10000 [00:04<00:12, 605.34sample/s]Total inferences:  24% 2432/10000 [00:05<00:12, 583.92sample/s]Total inferences:  26% 2560/10000 [00:05<00:11, 637.57sample/s]Total inferences:  27% 2688/10000 [00:05<00:11, 612.60sample/s]Total inferences:  28% 2816/10000 [00:05<00:10, 661.26sample/s]Total inferences:  29% 2944/10000 [00:05<00:11, 627.33sample/s]Total inferences:  31% 3072/10000 [00:06<00:11, 605.63sample/s]Total inferences:  32% 3200/10000 [00:06<00:11, 590.39sample/s]Total inferences:  33% 3328/10000 [00:06<00:11, 581.06sample/s]Total inferences:  35% 3456/10000 [00:06<00:10, 635.53sample/s]Total inferences:  36% 3584/10000 [00:06<00:09, 679.99sample/s]Total inferences:  37% 3712/10000 [00:07<00:08, 715.59sample/s]Total inferences:  38% 3840/10000 [00:07<00:08, 742.44sample/s]Total inferences:  40% 3968/10000 [00:07<00:08, 676.67sample/s]Total inferences:  41% 4096/10000 [00:07<00:09, 635.50sample/s]Total inferences:  42% 4224/10000 [00:07<00:08, 652.19sample/s]Total inferences:  44% 4352/10000 [00:08<00:08, 693.23sample/s]Total inferences:  45% 4480/10000 [00:08<00:08, 647.49sample/s]Total inferences:  46% 4608/10000 [00:08<00:07, 689.61sample/s]Total inferences:  47% 4736/10000 [00:08<00:07, 722.12sample/s]Total inferences:  49% 4864/10000 [00:08<00:07, 664.21sample/s]Total inferences:  50% 4992/10000 [00:09<00:07, 629.03sample/s]Total inferences:  51% 5120/10000 [00:09<00:07, 675.03sample/s]Total inferences:  52% 5248/10000 [00:09<00:07, 635.86sample/s]Total inferences:  54% 5376/10000 [00:09<00:07, 610.18sample/s]Total inferences:  55% 5504/10000 [00:09<00:07, 594.35sample/s]Total inferences:  56% 5632/10000 [00:10<00:06, 628.82sample/s]Total inferences:  58% 5760/10000 [00:10<00:06, 657.98sample/s]Total inferences:  59% 5888/10000 [00:10<00:06, 635.75sample/s]Total inferences:  60% 6016/10000 [00:10<00:06, 600.52sample/s]Total inferences:  61% 6144/10000 [00:10<00:06, 573.85sample/s]Total inferences:  63% 6272/10000 [00:11<00:06, 613.18sample/s]Total inferences:  64% 6400/10000 [00:11<00:06, 591.10sample/s]Total inferences:  65% 6528/10000 [00:11<00:06, 572.31sample/s]Total inferences:  67% 6656/10000 [00:11<00:05, 621.95sample/s]Total inferences:  68% 6784/10000 [00:11<00:05, 594.68sample/s]Total inferences:  69% 6912/10000 [00:12<00:04, 633.24sample/s]Total inferences:  70% 7040/10000 [00:12<00:04, 632.84sample/s]Total inferences:  72% 7168/10000 [00:12<00:04, 603.26sample/s]Total inferences:  73% 7296/10000 [00:12<00:04, 629.50sample/s]Total inferences:  74% 7424/10000 [00:13<00:04, 602.70sample/s]Total inferences:  76% 7552/10000 [00:13<00:03, 642.00sample/s]Total inferences:  77% 7680/10000 [00:13<00:03, 640.79sample/s]Total inferences:  78% 7808/10000 [00:13<00:03, 633.83sample/s]Total inferences:  79% 7936/10000 [00:13<00:03, 599.74sample/s]Total inferences:  81% 8064/10000 [00:14<00:03, 579.74sample/s]Total inferences:  82% 8192/10000 [00:14<00:02, 614.00sample/s]Total inferences:  83% 8320/10000 [00:14<00:02, 637.06sample/s]Total inferences:  84% 8448/10000 [00:14<00:02, 615.42sample/s]Total inferences:  86% 8576/10000 [00:14<00:02, 640.97sample/s]Total inferences:  87% 8704/10000 [00:15<00:02, 620.12sample/s]Total inferences:  88% 8832/10000 [00:15<00:01, 606.00sample/s]Total inferences:  90% 8960/10000 [00:15<00:01, 595.14sample/s]Total inferences:  91% 9088/10000 [00:15<00:01, 567.76sample/s]Total inferences:  92% 9216/10000 [00:15<00:01, 555.61sample/s]Total inferences:  93% 9344/10000 [00:16<00:01, 555.13sample/s]Total inferences:  95% 9472/10000 [00:16<00:00, 554.38sample/s]Total inferences:  96% 9600/10000 [00:16<00:00, 557.28sample/s]Total inferences:  97% 9728/10000 [00:16<00:00, 563.79sample/s]Total inferences:  99% 9856/10000 [00:17<00:00, 567.84sample/s]Total inferences: 100% 9984/10000 [00:17<00:00, 569.62sample/s]Total inferences: 100% 10000/10000 [00:17<00:00, 571.53sample/s]
+4. Accuracy  : 98.02%
+5. Metrics saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel25_cnn
+   (core cycles stored in cycles_core.npy)
+   (dynamic power, per-window)  mean=109.78 mW, P90=308.77 mW
+   (absolute power trace stored in power_abs.npy)
+   (dynamic-only power trace stored in power_dyn.npy)
+   (per-window stats stored in power_windows.npy)
+HW vs GT Accuracy    : 98.020000%
+
+[COMMS]
+  Latency   : 0.6714 ms ± 0.0710  (min=0.5920, max=1.1850)
+            : P50=0.6470  P90=0.7530  P99=0.9600
+  Throughput: 1502.98 inf/s ± 129.85
+
+[INF]
+  Latency   : 0.3738 ms ± 0.0301  (min=0.2450, max=0.5340)
+            : P50=0.3640  P90=0.4140  P99=0.4810
+  Throughput: 2690.98 inf/s ± 197.58
+
+[CYCLES core]   (9900 samples)
+  Mean cycles : 42823 ± 0  (min=42823, max=42823)
+            : P50=42823  P90=42823  P99=42823
+  Mean time  : 285.487 µs (3502.79 inf/s @ 150 MHz)
+
+[POWER absolute]   (175 samples)
+  Mean  : 3935.60 mW ± 322.97
+  Min   : 3220.00 mW
+  Max   : 4550.00 mW
+  Peak  : 4453.00 mW (P99)
+
+[POWER dynamic]   (175 samples)
+  Mean  : 121.45 mW ± 148.90
+  Min   : 0.00 mW
+  Max   : 590.77 mW
+  Peak  : 493.77 mW (P99)
+Power trace saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel25_cnn/power_trace.png
+Confusion matrix saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel25_cnn/confusion_matrix.png
+ROC curve saved        → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel25_cnn/roc_curve.png
+1. Loading and quantising MNIST test set…
+   Samples: 10000  Features: 784
+2. Programming FPGA bitstream…
+Power rails:
+  - /sys/class/hwmon/hwmon2/power1_input
+3. Running inference…
+Total inferences:   0% 0/10000 [00:00<?, ?sample/s]Idle baseline power: 3255.4 mW across 1 rail(s)
+Total inferences:   1% 128/10000 [00:01<01:36, 101.91sample/s]Total inferences:   3% 256/10000 [00:01<00:51, 190.26sample/s]Total inferences:   4% 384/10000 [00:01<00:36, 262.67sample/s]Total inferences:   5% 512/10000 [00:01<00:27, 344.66sample/s]Total inferences:   6% 640/10000 [00:02<00:24, 383.62sample/s]Total inferences:   8% 768/10000 [00:02<00:22, 413.05sample/s]Total inferences:   9% 896/10000 [00:02<00:21, 433.19sample/s]Total inferences:  10% 1024/10000 [00:03<00:20, 447.83sample/s]Total inferences:  12% 1152/10000 [00:03<00:19, 458.47sample/s]Total inferences:  13% 1280/10000 [00:03<00:18, 465.86sample/s]Total inferences:  14% 1408/10000 [00:03<00:16, 506.63sample/s]Total inferences:  15% 1536/10000 [00:04<00:17, 497.10sample/s]Total inferences:  17% 1664/10000 [00:04<00:16, 519.15sample/s]Total inferences:  18% 1792/10000 [00:04<00:15, 535.08sample/s]Total inferences:  19% 1920/10000 [00:04<00:15, 523.92sample/s]Total inferences:  20% 2048/10000 [00:05<00:16, 491.30sample/s]Total inferences:  22% 2176/10000 [00:05<00:15, 505.11sample/s]Total inferences:  23% 2304/10000 [00:05<00:14, 522.29sample/s]Total inferences:  24% 2432/10000 [00:05<00:14, 518.76sample/s]Total inferences:  26% 2560/10000 [00:05<00:14, 531.01sample/s]Total inferences:  27% 2688/10000 [00:06<00:14, 498.95sample/s]Total inferences:  28% 2816/10000 [00:06<00:14, 510.63sample/s]Total inferences:  29% 2944/10000 [00:06<00:14, 481.42sample/s]Total inferences:  31% 3072/10000 [00:07<00:13, 502.84sample/s]Total inferences:  32% 3200/10000 [00:07<00:12, 525.77sample/s]Total inferences:  33% 3328/10000 [00:07<00:12, 537.44sample/s]Total inferences:  35% 3456/10000 [00:07<00:12, 535.98sample/s]Total inferences:  36% 3584/10000 [00:07<00:11, 543.71sample/s]Total inferences:  37% 3712/10000 [00:08<00:11, 549.27sample/s]Total inferences:  38% 3840/10000 [00:08<00:12, 511.28sample/s]Total inferences:  40% 3968/10000 [00:08<00:11, 520.57sample/s]Total inferences:  41% 4096/10000 [00:09<00:12, 485.39sample/s]Total inferences:  42% 4224/10000 [00:09<00:12, 466.16sample/s]Total inferences:  44% 4352/10000 [00:09<00:12, 457.34sample/s]Total inferences:  45% 4480/10000 [00:09<00:12, 449.09sample/s]Total inferences:  46% 4608/10000 [00:10<00:12, 445.25sample/s]Total inferences:  47% 4736/10000 [00:10<00:11, 476.86sample/s]Total inferences:  49% 4864/10000 [00:10<00:11, 464.15sample/s]Total inferences:  50% 4992/10000 [00:11<00:11, 454.29sample/s]Total inferences:  51% 5120/10000 [00:11<00:10, 476.95sample/s]Total inferences:  52% 5248/10000 [00:11<00:10, 464.31sample/s]Total inferences:  54% 5376/10000 [00:11<00:09, 493.07sample/s]Total inferences:  55% 5504/10000 [00:11<00:08, 516.82sample/s]Total inferences:  56% 5632/10000 [00:12<00:08, 531.51sample/s]Total inferences:  58% 5760/10000 [00:12<00:07, 538.27sample/s]Total inferences:  59% 5888/10000 [00:12<00:08, 502.21sample/s]Total inferences:  60% 6016/10000 [00:13<00:08, 480.25sample/s]Total inferences:  61% 6144/10000 [00:13<00:07, 504.30sample/s]Total inferences:  63% 6272/10000 [00:13<00:07, 479.26sample/s]Total inferences:  64% 6400/10000 [00:13<00:07, 466.50sample/s]Total inferences:  65% 6528/10000 [00:14<00:07, 456.94sample/s]Total inferences:  67% 6656/10000 [00:14<00:06, 481.90sample/s]Total inferences:  68% 6784/10000 [00:14<00:06, 497.16sample/s]Total inferences:  69% 6912/10000 [00:14<00:06, 472.70sample/s]Total inferences:  70% 7040/10000 [00:15<00:06, 455.66sample/s]Total inferences:  72% 7168/10000 [00:15<00:05, 479.99sample/s]Total inferences:  73% 7296/10000 [00:15<00:05, 463.17sample/s]Total inferences:  74% 7424/10000 [00:15<00:05, 484.40sample/s]Total inferences:  76% 7552/10000 [00:16<00:05, 469.01sample/s]Total inferences:  77% 7680/10000 [00:16<00:05, 459.83sample/s]Total inferences:  78% 7808/10000 [00:16<00:04, 454.53sample/s]Total inferences:  79% 7936/10000 [00:17<00:04, 450.59sample/s]Total inferences:  81% 8064/10000 [00:17<00:04, 462.27sample/s]Total inferences:  82% 8192/10000 [00:17<00:03, 489.81sample/s]Total inferences:  83% 8320/10000 [00:17<00:03, 484.53sample/s]Total inferences:  84% 8448/10000 [00:18<00:03, 489.04sample/s]Total inferences:  86% 8576/10000 [00:18<00:02, 489.12sample/s]Total inferences:  87% 8704/10000 [00:18<00:02, 486.67sample/s]Total inferences:  88% 8832/10000 [00:18<00:02, 521.81sample/s]Total inferences:  90% 8960/10000 [00:19<00:01, 556.80sample/s]Total inferences:  91% 9088/10000 [00:19<00:01, 531.13sample/s]Total inferences:  92% 9216/10000 [00:19<00:01, 515.63sample/s]Total inferences:  93% 9344/10000 [00:19<00:01, 523.62sample/s]Total inferences:  95% 9472/10000 [00:20<00:01, 515.70sample/s]Total inferences:  96% 9600/10000 [00:20<00:00, 503.87sample/s]Total inferences:  97% 9728/10000 [00:20<00:00, 496.87sample/s]Total inferences:  99% 9856/10000 [00:20<00:00, 534.80sample/s]Total inferences: 100% 9984/10000 [00:21<00:00, 517.81sample/s]Total inferences: 100% 10000/10000 [00:21<00:00, 470.46sample/s]
+4. Accuracy  : 98.02%
+5. Metrics saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel50_cnn
+   (core cycles stored in cycles_core.npy)
+   (dynamic power, per-window)  mean=717.35 mW, P90=1094.42 mW
+   (absolute power trace stored in power_abs.npy)
+   (dynamic-only power trace stored in power_dyn.npy)
+   (per-window stats stored in power_windows.npy)
+HW vs GT Accuracy    : 98.020000%
+
+[COMMS]
+  Latency   : 1.0252 ms ± 0.2328  (min=0.8740, max=4.8530)
+            : P50=0.9780  P90=1.1630  P99=1.6880
+  Throughput: 997.73 inf/s ± 117.26
+
+[INF]
+  Latency   : 0.6450 ms ± 0.0732  (min=0.3090, max=1.4200)
+            : P50=0.6265  P90=0.7370  P99=0.8490
+  Throughput: 1567.88 inf/s ± 159.68
+
+[CYCLES core]   (9900 samples)
+  Mean cycles : 81993 ± 0  (min=81993, max=81993)
+            : P50=81993  P90=81993  P99=81993
+  Mean time  : 546.620 µs (1829.42 inf/s @ 150 MHz)
+
+[POWER absolute]   (236 samples)
+  Mean  : 4076.86 mW ± 326.06
+  Min   : 3220.00 mW
+  Max   : 4680.00 mW
+  Peak  : 4539.50 mW (P99)
+
+[POWER dynamic]   (236 samples)
+  Mean  : 821.98 mW ± 324.78
+  Min   : 0.00 mW
+  Max   : 1424.62 mW
+  Peak  : 1284.12 mW (P99)
+Power trace saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel50_cnn/power_trace.png
+Confusion matrix saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel50_cnn/confusion_matrix.png
+ROC curve saved        → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel50_cnn/roc_curve.png
+1. Loading and quantising MNIST test set…
+   Samples: 10000  Features: 784
+2. Programming FPGA bitstream…
+Power rails:
+  - /sys/class/hwmon/hwmon2/power1_input
+3. Running inference…
+Total inferences:   0% 0/10000 [00:00<?, ?sample/s]Idle baseline power: 3996.2 mW across 1 rail(s)
+Total inferences:   1% 128/10000 [00:01<01:51, 88.30sample/s]Total inferences:   3% 256/10000 [00:01<01:01, 157.31sample/s]Total inferences:   4% 384/10000 [00:02<00:45, 209.78sample/s]Total inferences:   5% 512/10000 [00:02<00:37, 249.70sample/s]Total inferences:   6% 640/10000 [00:02<00:33, 277.41sample/s]Total inferences:   8% 768/10000 [00:03<00:29, 309.22sample/s]Total inferences:   9% 896/10000 [00:03<00:27, 325.32sample/s]Total inferences:  10% 1024/10000 [00:03<00:26, 339.16sample/s]Total inferences:  12% 1152/10000 [00:04<00:24, 367.18sample/s]Total inferences:  13% 1280/10000 [00:04<00:24, 360.35sample/s]Total inferences:  14% 1408/10000 [00:04<00:23, 369.36sample/s]Total inferences:  15% 1536/10000 [00:05<00:21, 386.58sample/s]Total inferences:  17% 1664/10000 [00:05<00:21, 388.22sample/s]Total inferences:  18% 1792/10000 [00:05<00:20, 394.66sample/s]Total inferences:  19% 1920/10000 [00:06<00:20, 391.01sample/s]Total inferences:  20% 2048/10000 [00:06<00:20, 388.35sample/s]Total inferences:  22% 2176/10000 [00:06<00:20, 386.62sample/s]Total inferences:  23% 2304/10000 [00:07<00:19, 385.43sample/s]Total inferences:  24% 2432/10000 [00:07<00:19, 384.40sample/s]Total inferences:  26% 2560/10000 [00:07<00:19, 383.26sample/s]Total inferences:  27% 2688/10000 [00:08<00:18, 396.79sample/s]Total inferences:  28% 2816/10000 [00:08<00:18, 392.18sample/s]Total inferences:  29% 2944/10000 [00:08<00:18, 387.13sample/s]Total inferences:  31% 3072/10000 [00:09<00:17, 385.54sample/s]Total inferences:  32% 3200/10000 [00:09<00:16, 407.69sample/s]Total inferences:  33% 3328/10000 [00:09<00:16, 399.64sample/s]Total inferences:  35% 3456/10000 [00:10<00:16, 393.41sample/s]Total inferences:  36% 3584/10000 [00:10<00:15, 402.62sample/s]Total inferences:  37% 3712/10000 [00:10<00:16, 385.96sample/s]Total inferences:  38% 3840/10000 [00:11<00:16, 381.40sample/s]Total inferences:  40% 3968/10000 [00:11<00:15, 377.72sample/s]Total inferences:  41% 4096/10000 [00:11<00:15, 375.40sample/s]Total inferences:  42% 4224/10000 [00:12<00:15, 377.38sample/s]Total inferences:  44% 4352/10000 [00:12<00:14, 377.24sample/s]Total inferences:  45% 4480/10000 [00:12<00:14, 380.67sample/s]Total inferences:  46% 4608/10000 [00:13<00:14, 365.08sample/s]Total inferences:  47% 4736/10000 [00:13<00:13, 379.42sample/s]Total inferences:  49% 4864/10000 [00:13<00:13, 386.00sample/s]Total inferences:  50% 4992/10000 [00:14<00:12, 393.10sample/s]Total inferences:  51% 5120/10000 [00:14<00:12, 391.12sample/s]Total inferences:  52% 5248/10000 [00:14<00:12, 389.18sample/s]Total inferences:  54% 5376/10000 [00:15<00:11, 390.99sample/s]Total inferences:  55% 5504/10000 [00:15<00:11, 395.15sample/s]Total inferences:  56% 5632/10000 [00:15<00:11, 374.27sample/s]Total inferences:  58% 5760/10000 [00:16<00:11, 363.24sample/s]Total inferences:  59% 5888/10000 [00:16<00:10, 376.91sample/s]Total inferences:  60% 6016/10000 [00:16<00:10, 382.27sample/s]Total inferences:  61% 6144/10000 [00:17<00:10, 384.95sample/s]Total inferences:  63% 6272/10000 [00:17<00:09, 383.06sample/s]Total inferences:  64% 6400/10000 [00:17<00:09, 368.76sample/s]Total inferences:  65% 6528/10000 [00:18<00:09, 382.48sample/s]Total inferences:  67% 6656/10000 [00:18<00:08, 378.64sample/s]Total inferences:  68% 6784/10000 [00:18<00:08, 372.01sample/s]Total inferences:  69% 6912/10000 [00:19<00:08, 368.54sample/s]Total inferences:  70% 7040/10000 [00:19<00:07, 376.98sample/s]Total inferences:  72% 7168/10000 [00:19<00:07, 369.51sample/s]Total inferences:  73% 7296/10000 [00:20<00:07, 361.90sample/s]Total inferences:  74% 7424/10000 [00:20<00:06, 381.81sample/s]Total inferences:  76% 7552/10000 [00:20<00:06, 377.19sample/s]Total inferences:  77% 7680/10000 [00:21<00:06, 384.48sample/s]Total inferences:  78% 7808/10000 [00:21<00:05, 386.18sample/s]Total inferences:  79% 7936/10000 [00:21<00:05, 407.86sample/s]Total inferences:  81% 8064/10000 [00:22<00:04, 425.95sample/s]Total inferences:  82% 8192/10000 [00:22<00:04, 409.26sample/s]Total inferences:  83% 8320/10000 [00:22<00:04, 395.40sample/s]Total inferences:  84% 8448/10000 [00:23<00:04, 376.15sample/s]Total inferences:  86% 8576/10000 [00:23<00:03, 400.56sample/s]Total inferences:  87% 8704/10000 [00:23<00:03, 421.42sample/s]Total inferences:  88% 8832/10000 [00:24<00:02, 434.72sample/s]Total inferences:  90% 8960/10000 [00:24<00:02, 448.56sample/s]Total inferences:  91% 9088/10000 [00:24<00:02, 424.68sample/s]Total inferences:  92% 9216/10000 [00:24<00:01, 410.60sample/s]Total inferences:  93% 9344/10000 [00:25<00:01, 401.31sample/s]Total inferences:  95% 9472/10000 [00:25<00:01, 388.01sample/s]Total inferences:  96% 9600/10000 [00:25<00:01, 386.17sample/s]Total inferences:  97% 9728/10000 [00:26<00:00, 384.94sample/s]Total inferences:  99% 9856/10000 [00:26<00:00, 384.12sample/s]Total inferences: 100% 9984/10000 [00:26<00:00, 383.59sample/s]Total inferences: 100% 10000/10000 [00:27<00:00, 368.36sample/s]
+4. Accuracy  : 98.02%
+5. Metrics saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel100_cnn
+   (core cycles stored in cycles_core.npy)
+   (dynamic power, per-window)  mean=96.47 mW, P90=305.48 mW
+   (absolute power trace stored in power_abs.npy)
+   (dynamic-only power trace stored in power_dyn.npy)
+   (per-window stats stored in power_windows.npy)
+HW vs GT Accuracy    : 98.020000%
+
+[COMMS]
+  Latency   : 1.5898 ms ± 0.1443  (min=1.4190, max=2.3180)
+            : P50=1.5450  P90=1.7860  P99=2.0040
+  Throughput: 633.85 inf/s ± 53.69
+
+[INF]
+  Latency   : 1.1236 ms ± 0.0924  (min=0.3880, max=1.4930)
+            : P50=1.1000  P90=1.2530  P99=1.3470
+  Throughput: 896.16 inf/s ± 78.45
+
+[CYCLES core]   (9900 samples)
+  Mean cycles : 160692 ± 0  (min=160692, max=160692)
+            : P50=160692  P90=160692  P99=160692
+  Mean time  : 1071.280 µs (933.46 inf/s @ 150 MHz)
+
+[POWER absolute]   (259 samples)
+  Mean  : 3968.80 mW ± 333.21
+  Min   : 3210.00 mW
+  Max   : 4570.00 mW
+  Peak  : 4466.80 mW (P99)
+
+[POWER dynamic]   (259 samples)
+  Mean  : 122.70 mW ± 150.97
+  Min   : 0.00 mW
+  Max   : 573.85 mW
+  Peak  : 470.65 mW (P99)
+Power trace saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel100_cnn/power_trace.png
+Confusion matrix saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel100_cnn/confusion_matrix.png
+ROC curve saved        → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel100_cnn/roc_curve.png
+1. Loading and quantising MNIST test set…
+   Samples: 10000  Features: 784
+2. Programming FPGA bitstream…
+Power rails:
+  - /sys/class/hwmon/hwmon2/power1_input
+3. Running inference…
+Total inferences:   0% 0/10000 [00:00<?, ?sample/s]Idle baseline power: 3466.2 mW across 1 rail(s)
+Total inferences:   1% 128/10000 [00:01<01:32, 106.92sample/s]Total inferences:   3% 256/10000 [00:01<00:46, 208.32sample/s]Total inferences:   4% 384/10000 [00:01<00:32, 298.80sample/s]Total inferences:   5% 512/10000 [00:01<00:25, 375.46sample/s]Total inferences:   6% 640/10000 [00:02<00:21, 437.81sample/s]Total inferences:   8% 768/10000 [00:02<00:17, 535.98sample/s]Total inferences:   9% 896/10000 [00:02<00:14, 621.93sample/s]Total inferences:  10% 1024/10000 [00:02<00:12, 698.10sample/s]Total inferences:  12% 1152/10000 [00:02<00:13, 672.29sample/s]Total inferences:  13% 1280/10000 [00:02<00:13, 655.79sample/s]Total inferences:  14% 1408/10000 [00:03<00:13, 645.33sample/s]Total inferences:  15% 1536/10000 [00:03<00:13, 638.43sample/s]Total inferences:  17% 1664/10000 [00:03<00:13, 633.55sample/s]Total inferences:  18% 1792/10000 [00:03<00:13, 629.09sample/s]Total inferences:  19% 1920/10000 [00:03<00:12, 661.40sample/s]Total inferences:  20% 2048/10000 [00:04<00:12, 649.23sample/s]Total inferences:  22% 2176/10000 [00:04<00:11, 696.43sample/s]Total inferences:  23% 2304/10000 [00:04<00:10, 717.04sample/s]Total inferences:  24% 2432/10000 [00:04<00:10, 733.46sample/s]Total inferences:  26% 2560/10000 [00:04<00:09, 766.92sample/s]Total inferences:  27% 2688/10000 [00:04<00:10, 702.49sample/s]Total inferences:  28% 2816/10000 [00:05<00:10, 659.83sample/s]Total inferences:  29% 2944/10000 [00:05<00:10, 694.56sample/s]Total inferences:  31% 3072/10000 [00:05<00:10, 648.57sample/s]Total inferences:  32% 3200/10000 [00:05<00:09, 685.27sample/s]Total inferences:  33% 3328/10000 [00:05<00:09, 728.63sample/s]Total inferences:  35% 3456/10000 [00:06<00:09, 679.86sample/s]Total inferences:  36% 3584/10000 [00:06<00:08, 716.04sample/s]Total inferences:  37% 3712/10000 [00:06<00:08, 749.52sample/s]Total inferences:  38% 3840/10000 [00:06<00:08, 768.98sample/s]Total inferences:  40% 3968/10000 [00:06<00:07, 772.57sample/s]Total inferences:  41% 4096/10000 [00:06<00:07, 764.90sample/s]Total inferences:  42% 4224/10000 [00:07<00:08, 696.54sample/s]Total inferences:  44% 4352/10000 [00:07<00:08, 653.34sample/s]Total inferences:  45% 4480/10000 [00:07<00:07, 708.60sample/s]Total inferences:  46% 4608/10000 [00:07<00:07, 741.64sample/s]Total inferences:  47% 4736/10000 [00:07<00:06, 770.11sample/s]Total inferences:  49% 4864/10000 [00:07<00:06, 789.20sample/s]Total inferences:  50% 4992/10000 [00:08<00:07, 713.46sample/s]Total inferences:  51% 5120/10000 [00:08<00:07, 665.55sample/s]Total inferences:  52% 5248/10000 [00:08<00:06, 702.26sample/s]Total inferences:  54% 5376/10000 [00:08<00:06, 662.56sample/s]Total inferences:  55% 5504/10000 [00:08<00:07, 635.84sample/s]Total inferences:  56% 5632/10000 [00:09<00:06, 668.94sample/s]Total inferences:  58% 5760/10000 [00:09<00:06, 642.66sample/s]Total inferences:  59% 5888/10000 [00:09<00:05, 698.68sample/s]Total inferences:  60% 6016/10000 [00:09<00:05, 700.62sample/s]Total inferences:  61% 6144/10000 [00:09<00:05, 658.39sample/s]Total inferences:  63% 6272/10000 [00:10<00:05, 698.71sample/s]Total inferences:  64% 6400/10000 [00:10<00:05, 657.93sample/s]Total inferences:  65% 6528/10000 [00:10<00:04, 705.11sample/s]Total inferences:  67% 6656/10000 [00:10<00:04, 737.02sample/s]Total inferences:  68% 6784/10000 [00:10<00:04, 749.53sample/s]Total inferences:  69% 6912/10000 [00:10<00:04, 769.34sample/s]Total inferences:  70% 7040/10000 [00:11<00:03, 783.75sample/s]Total inferences:  72% 7168/10000 [00:11<00:04, 696.03sample/s]Total inferences:  73% 7296/10000 [00:11<00:04, 658.23sample/s]Total inferences:  74% 7424/10000 [00:11<00:04, 631.06sample/s]Total inferences:  76% 7552/10000 [00:11<00:03, 615.62sample/s]Total inferences:  77% 7680/10000 [00:12<00:03, 610.38sample/s]Total inferences:  78% 7808/10000 [00:12<00:03, 660.08sample/s]Total inferences:  79% 7936/10000 [00:12<00:02, 696.63sample/s]Total inferences:  81% 8064/10000 [00:12<00:02, 729.92sample/s]Total inferences:  82% 8192/10000 [00:12<00:02, 755.26sample/s]Total inferences:  83% 8320/10000 [00:12<00:02, 781.95sample/s]Total inferences:  84% 8448/10000 [00:13<00:02, 695.70sample/s]Total inferences:  86% 8576/10000 [00:13<00:02, 704.19sample/s]Total inferences:  87% 8704/10000 [00:13<00:01, 659.81sample/s]Total inferences:  88% 8832/10000 [00:13<00:01, 632.22sample/s]Total inferences:  90% 8960/10000 [00:13<00:01, 612.06sample/s]Total inferences:  91% 9088/10000 [00:14<00:01, 650.46sample/s]Total inferences:  92% 9216/10000 [00:14<00:01, 630.63sample/s]Total inferences:  93% 9344/10000 [00:14<00:01, 613.05sample/s]Total inferences:  95% 9472/10000 [00:14<00:00, 660.18sample/s]Total inferences:  96% 9600/10000 [00:14<00:00, 644.86sample/s]Total inferences:  97% 9728/10000 [00:15<00:00, 631.93sample/s]Total inferences:  99% 9856/10000 [00:15<00:00, 651.87sample/s]Total inferences: 100% 9984/10000 [00:15<00:00, 637.35sample/s]Total inferences: 100% 10000/10000 [00:15<00:00, 638.79sample/s]
+4. Accuracy  : 98.02%
+5. Metrics saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel6_25_cnn
+   (core cycles stored in cycles_core.npy)
+   (dynamic power, per-window)  mean=591.39 mW, P90=967.85 mW
+   (absolute power trace stored in power_abs.npy)
+   (dynamic-only power trace stored in power_dyn.npy)
+   (per-window stats stored in power_windows.npy)
+HW vs GT Accuracy    : 98.020000%
+
+[COMMS]
+  Latency   : 0.4918 ms ± 0.0921  (min=0.4260, max=1.6320)
+            : P50=0.4660  P90=0.5570  P99=0.9010
+  Throughput: 2074.97 inf/s ± 239.06
+
+[INF]
+  Latency   : 0.1915 ms ± 0.0295  (min=0.1620, max=0.4010)
+            : P50=0.1820  P90=0.2250  P99=0.3160
+  Throughput: 5316.91 inf/s ± 630.58
+
+[CYCLES core]   (9900 samples)
+  Mean cycles : 13132 ± 0  (min=13132, max=13132)
+            : P50=13132  P90=13132  P99=13132
+  Mean time  : 87.547 µs (11422.48 inf/s @ 150 MHz)
+
+[POWER absolute]   (176 samples)
+  Mean  : 4080.91 mW ± 313.30
+  Min   : 3220.00 mW
+  Max   : 4730.00 mW
+  Peak  : 4637.50 mW (P99)
+
+[POWER dynamic]   (176 samples)
+  Mean  : 624.56 mW ± 289.47
+  Min   : 0.00 mW
+  Max   : 1263.85 mW
+  Peak  : 1171.35 mW (P99)
+Power trace saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel6_25_cnn/power_trace.png
+Confusion matrix saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel6_25_cnn/confusion_matrix.png
+ROC curve saved        → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel6_25_cnn/roc_curve.png
+1. Loading and quantising MNIST test set…
+   Samples: 10000  Features: 784
+2. Programming FPGA bitstream…
+Power rails:
+  - /sys/class/hwmon/hwmon2/power1_input
+3. Running inference…
+Total inferences:   0% 0/10000 [00:00<?, ?sample/s]Idle baseline power: 3973.1 mW across 1 rail(s)
+Total inferences:   1% 128/10000 [00:01<01:39, 99.41sample/s]Total inferences:   3% 256/10000 [00:01<00:47, 204.39sample/s]Total inferences:   4% 384/10000 [00:01<00:33, 290.73sample/s]Total inferences:   5% 512/10000 [00:01<00:24, 388.07sample/s]Total inferences:   6% 640/10000 [00:02<00:21, 441.41sample/s]Total inferences:   8% 768/10000 [00:02<00:17, 523.39sample/s]Total inferences:   9% 896/10000 [00:02<00:15, 596.46sample/s]Total inferences:  10% 1024/10000 [00:02<00:13, 653.53sample/s]Total inferences:  12% 1152/10000 [00:02<00:12, 687.43sample/s]Total inferences:  13% 1280/10000 [00:02<00:12, 710.95sample/s]Total inferences:  14% 1408/10000 [00:03<00:11, 727.34sample/s]Total inferences:  15% 1536/10000 [00:03<00:11, 756.54sample/s]Total inferences:  17% 1664/10000 [00:03<00:11, 702.23sample/s]Total inferences:  18% 1792/10000 [00:03<00:11, 725.62sample/s]Total inferences:  19% 1920/10000 [00:03<00:11, 682.76sample/s]Total inferences:  20% 2048/10000 [00:03<00:12, 650.63sample/s]Total inferences:  22% 2176/10000 [00:04<00:12, 631.73sample/s]Total inferences:  23% 2304/10000 [00:04<00:11, 669.49sample/s]Total inferences:  24% 2432/10000 [00:04<00:10, 699.83sample/s]Total inferences:  26% 2560/10000 [00:04<00:11, 663.27sample/s]Total inferences:  27% 2688/10000 [00:04<00:11, 640.32sample/s]Total inferences:  28% 2816/10000 [00:05<00:10, 703.96sample/s]Total inferences:  29% 2944/10000 [00:05<00:10, 672.17sample/s]Total inferences:  31% 3072/10000 [00:05<00:09, 730.45sample/s]Total inferences:  32% 3200/10000 [00:05<00:09, 687.74sample/s]Total inferences:  33% 3328/10000 [00:05<00:10, 662.07sample/s]Total inferences:  35% 3456/10000 [00:06<00:09, 722.53sample/s]Total inferences:  36% 3584/10000 [00:06<00:08, 771.70sample/s]Total inferences:  37% 3712/10000 [00:06<00:07, 810.52sample/s]Total inferences:  38% 3840/10000 [00:06<00:08, 737.53sample/s]Total inferences:  40% 3968/10000 [00:06<00:08, 693.48sample/s]Total inferences:  41% 4096/10000 [00:06<00:08, 665.71sample/s]Total inferences:  42% 4224/10000 [00:07<00:07, 725.48sample/s]Total inferences:  44% 4352/10000 [00:07<00:07, 772.77sample/s]Total inferences:  45% 4480/10000 [00:07<00:06, 810.71sample/s]Total inferences:  46% 4608/10000 [00:07<00:06, 839.74sample/s]Total inferences:  47% 4736/10000 [00:07<00:06, 753.99sample/s]Total inferences:  49% 4864/10000 [00:07<00:07, 703.40sample/s]Total inferences:  50% 4992/10000 [00:08<00:06, 756.23sample/s]Total inferences:  51% 5120/10000 [00:08<00:06, 704.94sample/s]Total inferences:  52% 5248/10000 [00:08<00:07, 672.51sample/s]Total inferences:  54% 5376/10000 [00:08<00:06, 730.95sample/s]Total inferences:  55% 5504/10000 [00:08<00:06, 689.70sample/s]Total inferences:  56% 5632/10000 [00:09<00:06, 662.93sample/s]Total inferences:  58% 5760/10000 [00:09<00:05, 719.50sample/s]Total inferences:  59% 5888/10000 [00:09<00:06, 682.40sample/s]Total inferences:  60% 6016/10000 [00:09<00:06, 656.70sample/s]Total inferences:  61% 6144/10000 [00:09<00:06, 641.58sample/s]Total inferences:  63% 6272/10000 [00:09<00:05, 705.38sample/s]Total inferences:  64% 6400/10000 [00:10<00:04, 730.57sample/s]Total inferences:  65% 6528/10000 [00:10<00:04, 695.68sample/s]Total inferences:  67% 6656/10000 [00:10<00:04, 692.96sample/s]Total inferences:  68% 6784/10000 [00:10<00:04, 735.04sample/s]Total inferences:  69% 6912/10000 [00:10<00:04, 683.14sample/s]Total inferences:  70% 7040/10000 [00:11<00:04, 713.53sample/s]Total inferences:  72% 7168/10000 [00:11<00:03, 736.80sample/s]Total inferences:  73% 7296/10000 [00:11<00:03, 743.48sample/s]Total inferences:  74% 7424/10000 [00:11<00:03, 774.75sample/s]Total inferences:  76% 7552/10000 [00:11<00:03, 719.38sample/s]Total inferences:  77% 7680/10000 [00:11<00:03, 735.58sample/s]Total inferences:  78% 7808/10000 [00:12<00:02, 746.30sample/s]Total inferences:  79% 7936/10000 [00:12<00:02, 776.69sample/s]Total inferences:  81% 8064/10000 [00:12<00:02, 706.97sample/s]Total inferences:  82% 8192/10000 [00:12<00:02, 729.75sample/s]Total inferences:  83% 8320/10000 [00:12<00:02, 664.39sample/s]Total inferences:  84% 8448/10000 [00:12<00:02, 670.84sample/s]Total inferences:  86% 8576/10000 [00:13<00:02, 638.85sample/s]Total inferences:  87% 8704/10000 [00:13<00:02, 619.91sample/s]Total inferences:  88% 8832/10000 [00:13<00:01, 645.90sample/s]Total inferences:  90% 8960/10000 [00:13<00:01, 677.26sample/s]Total inferences:  91% 9088/10000 [00:13<00:01, 684.14sample/s]Total inferences:  92% 9216/10000 [00:14<00:01, 721.87sample/s]Total inferences:  93% 9344/10000 [00:14<00:00, 730.40sample/s]Total inferences:  95% 9472/10000 [00:14<00:00, 730.41sample/s]Total inferences:  96% 9600/10000 [00:14<00:00, 748.01sample/s]Total inferences:  97% 9728/10000 [00:14<00:00, 763.77sample/s]Total inferences:  99% 9856/10000 [00:14<00:00, 768.47sample/s]Total inferences: 100% 9984/10000 [00:15<00:00, 761.82sample/s]Total inferences: 100% 10000/10000 [00:15<00:00, 658.57sample/s]
+4. Accuracy  : 98.02%
+5. Metrics saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel12_5_cnn
+   (core cycles stored in cycles_core.npy)
+   (dynamic power, per-window)  mean=107.04 mW, P90=356.92 mW
+   (absolute power trace stored in power_abs.npy)
+   (dynamic-only power trace stored in power_dyn.npy)
+   (per-window stats stored in power_windows.npy)
+HW vs GT Accuracy    : 98.020000%
+
+[COMMS]
+  Latency   : 0.5112 ms ± 0.0527  (min=0.4550, max=0.9220)
+            : P50=0.4940  P90=0.5580  P99=0.7800
+  Throughput: 1971.92 inf/s ± 156.07
+
+[INF]
+  Latency   : 0.2248 ms ± 0.0204  (min=0.1610, max=0.3640)
+            : P50=0.2180  P90=0.2470  P99=0.3080
+  Throughput: 4478.85 inf/s ± 352.20
+
+[CYCLES core]   (9900 samples)
+  Mean cycles : 23045 ± 0  (min=23045, max=23045)
+            : P50=23045  P90=23045  P99=23045
+  Mean time  : 153.633 µs (6509.00 inf/s @ 150 MHz)
+
+[POWER absolute]   (150 samples)
+  Mean  : 3880.20 mW ± 349.83
+  Min   : 3220.00 mW
+  Max   : 4670.00 mW
+  Peak  : 4510.20 mW (P99)
+
+[POWER dynamic]   (150 samples)
+  Mean  : 103.58 mW ± 157.98
+  Min   : 0.00 mW
+  Max   : 696.92 mW
+  Peak  : 537.12 mW (P99)
+Power trace saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel12_5_cnn/power_trace.png
+Confusion matrix saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel12_5_cnn/confusion_matrix.png
+ROC curve saved        → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/rfmodels/rfmodel12_5_cnn/roc_curve.png
