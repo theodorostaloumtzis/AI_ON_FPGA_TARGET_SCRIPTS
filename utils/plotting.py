@@ -56,6 +56,7 @@ def plot_power_trace(p_abs: np.ndarray | None,
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Power (mW)")
     ax.set_title("Power Trace")
+    ax.grid(True, which="both", ls="--", lw=0.5)
     ax.legend()
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)

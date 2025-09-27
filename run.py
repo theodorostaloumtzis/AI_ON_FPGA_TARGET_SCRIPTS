@@ -119,7 +119,7 @@ def run_inference(
     power_poll: float = 0.07,
     power_frames: int = 128,
     power_rail: Optional[list[str]] = None,
-    idle_seconds: float = 1.0,
+    idle_seconds: float = 5.0,
     no_progress: bool = False,
 ) -> None:
     """
@@ -210,11 +210,9 @@ def assemble_paths():
         "baseline_bit":    str(bitfiles / "baseline" / "baseline_cnn.bit"),
         "quant_bit":       str(bitfiles / "quantized" / "quant_cnn.bit"),
         "optim_bit":       str(bitfiles / "optim" / "optim_cnn.bit"),
-        "optim64_bit":     str(bitfiles / "optim64" / "optim64_cnn.bit"),
         "metrics_baseline": str(PWD / "metrics" / "baseline"),
         "metrics_quant":    str(PWD / "metrics" / "quant"),
-        "metrics_optim":    str(PWD / "metrics" / "optim"),
-        "metrics_optim64":  str(PWD / "metrics" / "optim64"),
+        "metrics_optim":    str(PWD / "metrics" / "optim")
     }
 
 def main() -> None:
@@ -254,21 +252,7 @@ def main() -> None:
         cycles="auto",
         cycle_type="core",
     )
-    validate_results(metrics_dir=p["metrics_optim"], clk_mhz=200, exclude_pct=1.0)
-
-    # Optimized (packed uint64 stream)
-    log_print("Running inference for optimized configuration (optim64)...")
-    clear_bitfile()
-    run_inference(
-        p["optim64_bit"],
-        metrics_dir=p["metrics_optim64"],
-        pack=True,
-        cycles="auto",
-        cycle_type="core",
-    )
-    validate_results(metrics_dir=p["metrics_optim64"], clk_mhz=200, exclude_pct=1.0)
-
-    
+    validate_results(metrics_dir=p["metrics_optim"], clk_mhz=200, exclude_pct=1.0)  
 
 if __name__ == "__main__":
     try:

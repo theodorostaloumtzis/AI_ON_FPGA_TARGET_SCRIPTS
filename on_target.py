@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-FPGA-based MNIST inference (INT16 Q6.10) + Stable Power Monitoring
-------------------------------------------------------------------
-Aligns power sampling windows with actual work, integrates energy,
-and reports dynamic mW with low variance.
+FPGA inference runner (INT16 Q6.10) + Stable Power Monitoring
+-------------------------------------------------------------
+Supports MNIST (28x28x1) and SVHN (32x32x3). Loads, quantises, runs the
+bitstream, aligns power sampling windows with work, integrates energy,
+and reports dynamic mW.
 
-Outputs:
+Outputs (saved to --metrics-dir):
   - y_hw.npy
   - latency_comm.npy, throughput_comm.npy
   - latency_inf.npy,  throughput_inf.npy
@@ -16,11 +17,15 @@ Outputs:
 """
 from __future__ import annotations
 import argparse
+import os
 from pathlib import Path
 import numpy as np
 from tqdm.auto import tqdm
 
+# Dataset loaders (both expose load_and_quantize_*)
 from utils.mnist_utils import load_and_quantize_mnist
+from utils.svhn_utils import load_and_quantize_svhn
+
 from utils.power_monitor import PowerMonitor, find_power_inputs
 from utils.driver import allocate_overlay
 from utils.packing import pack4
@@ -33,10 +38,14 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("-b", "--bitstream", required=True, help="Compiled .bit file path")
     p.add_argument("-m", "--metrics-dir", default="metrics/", help="Where to save .npy outputs")
 
+    # Dataset
+    p.add_argument("--dataset", choices=["mnist", "svhn"], default=os.environ.get("DATASET", "mnist"),
+                   help="Choose which dataset to load and quantise")
+
     # Progress + packing
     p.add_argument("--no-progress", action="store_true", help="Disable tqdm progress bar")
     p.add_argument("--package-data", "-pd", action="store_true",
-                   help="Pack 4 pixels into one uint64 word before inference")
+                   help="Pack 4 16-bit samples into one uint64 word before inference")
 
     # Cycles
     p.add_argument("--cycles", choices=["auto", "on", "off"], default="auto",
@@ -66,23 +75,42 @@ def configure_power_monitor(args) -> PowerMonitor | None:
     return PowerMonitor(paths=rail_paths, poll_s=args.power_poll)
 
 
+def load_dataset(name: str) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Returns:
+      X_i16 : (N, F) int16 in Q6.10
+      y_int : (N,)  uint8 labels
+    """
+    if name == "mnist":
+        print("1. Loading and quantising MNIST test set…")
+        X_i16, y_int = load_and_quantize_mnist()
+    elif name == "svhn":
+        print("1. Loading and quantising SVHN test set…")
+        # SVHN helper defaults to split='test' and flatten=True → (N, 3072)
+        X_i16, y_int = load_and_quantize_svhn()
+    else:
+        raise ValueError(f"Unknown dataset: {name}")
+    return X_i16, y_int
+
+
 def main() -> None:
     args = parse_args()
     mdir = Path(args.metrics_dir)
     mdir.mkdir(parents=True, exist_ok=True)
 
     # 1) Data
-    print("1. Loading and quantising MNIST test set…")
-    X_i16, y_int = load_and_quantize_mnist()
+    X_i16, y_int = load_dataset(args.dataset)
     N, F = X_i16.shape
-    print(f"   Samples: {N}  Features: {F}")
+    print(f"   Dataset: {args.dataset}  Samples: {N}  Features: {F}")
 
     if args.package_data:
-        print("   Packing data to uint64 (4 pixels / word)…")
+        print("   Packing data to uint64 (4× int16 per word)…")
+        # Expects flattened features; both loaders return (N, F)
         X = pack4(X_i16, batch_size=1_000)
         dtype = np.uint64
     else:
         X = X_i16
+        # Stream uses 16-bit words; negatives are two's complement
         dtype = np.uint16
 
     # 2) FPGA bitstream / overlay

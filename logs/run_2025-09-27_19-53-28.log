@@ -1,0 +1,210 @@
+[cwd] /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS
+Running inference for baseline configuration...
+[cmd] /usr/local/share/pynq-venv/bin/python clear_global_state.py
+[cmd] /usr/local/share/pynq-venv/bin/python on_target.py -b /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/bitfiles/baseline/baseline_cnn.bit -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/baseline --cycles auto --cycle-type core --power-poll 0.07 --power-frames 128 --idle-seconds 5.0
+[cmd] /usr/local/share/pynq-venv/bin/python validate_results.py -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/baseline --cycles-core cycles_core.npy --power-abs power_abs.npy --power-dyn power_dyn.npy --clk-mhz 150 --exclude-pct 1.0
+Running inference for quantized configuration...
+[cmd] /usr/local/share/pynq-venv/bin/python clear_global_state.py
+[cmd] /usr/local/share/pynq-venv/bin/python on_target.py -b /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/bitfiles/quantized/quant_cnn.bit -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/quant --cycles auto --cycle-type core --power-poll 0.07 --power-frames 128 --idle-seconds 5.0
+[cmd] /usr/local/share/pynq-venv/bin/python validate_results.py -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/quant --cycles-core cycles_core.npy --power-abs power_abs.npy --power-dyn power_dyn.npy --clk-mhz 150 --exclude-pct 1.0
+Running inference for optimized configuration (optim)...
+[cmd] /usr/local/share/pynq-venv/bin/python clear_global_state.py
+[cmd] /usr/local/share/pynq-venv/bin/python on_target.py -b /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/bitfiles/optim/optim_cnn.bit -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/optim --cycles auto --cycle-type core --power-poll 0.07 --power-frames 128 --idle-seconds 5.0
+[cmd] /usr/local/share/pynq-venv/bin/python validate_results.py -m /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/optim --cycles-core cycles_core.npy --power-abs power_abs.npy --power-dyn power_dyn.npy --clk-mhz 200 --exclude-pct 1.0
+:08<00:10, 741.41sample/s]Total inferences:  26% 2560/10000 [00:08<00:09, 783.77sample/s]Total inferences:  27% 2688/10000 [00:08<00:10, 715.76sample/s]Total inferences:  28% 2816/10000 [00:08<00:10, 679.04sample/s]Total inferences:  29% 2944/10000 [00:09<00:10, 655.74sample/s]Total inferences:  31% 3072/10000 [00:09<00:10, 640.07sample/s]Total inferences:  32% 3200/10000 [00:09<00:09, 700.89sample/s]Total inferences:  33% 3328/10000 [00:09<00:09, 668.48sample/s]Total inferences:  35% 3456/10000 [00:09<00:08, 727.52sample/s]Total inferences:  36% 3584/10000 [00:09<00:08, 774.53sample/s]Total inferences:  37% 3712/10000 [00:10<00:08, 715.42sample/s]Total inferences:  38% 3840/10000 [00:10<00:08, 765.77sample/s]Total inferences:  40% 3968/10000 [00:10<00:07, 805.34sample/s]Total inferences:  41% 4096/10000 [00:10<00:08, 733.18sample/s]Total inferences:  42% 4224/10000 [00:10<00:08, 690.65sample/s]Total inferences:  44% 4352/10000 [00:11<00:08, 664.01sample/s]Total inferences:  45% 4480/10000 [00:11<00:07, 723.71sample/s]Total inferences:  46% 4608/10000 [00:11<00:06, 772.08sample/s]Total inferences:  47% 4736/10000 [00:11<00:07, 713.69sample/s]Total inferences:  49% 4864/10000 [00:11<00:07, 678.23sample/s]Total inferences:  50% 4992/10000 [00:11<00:06, 735.30sample/s]Total inferences:  51% 5120/10000 [00:11<00:06, 781.16sample/s]Total inferences:  52% 5248/10000 [00:12<00:05, 816.77sample/s]Total inferences:  54% 5376/10000 [00:12<00:06, 739.94sample/s]Total inferences:  55% 5504/10000 [00:12<00:05, 780.84sample/s]Total inferences:  56% 5632/10000 [00:12<00:06, 718.81sample/s]Total inferences:  58% 5760/10000 [00:12<00:06, 681.61sample/s]Total inferences:  59% 5888/10000 [00:13<00:05, 735.10sample/s]Total inferences:  60% 6016/10000 [00:13<00:05, 684.52sample/s]Total inferences:  61% 6144/10000 [00:13<00:05, 740.83sample/s]Total inferences:  63% 6272/10000 [00:13<00:05, 691.78sample/s]Total inferences:  64% 6400/10000 [00:13<00:05, 664.22sample/s]Total inferences:  65% 6528/10000 [00:13<00:04, 723.95sample/s]Total inferences:  67% 6656/10000 [00:14<00:04, 772.17sample/s]Total inferences:  68% 6784/10000 [00:14<00:04, 714.21sample/s]Total inferences:  69% 6912/10000 [00:14<00:04, 678.26sample/s]Total inferences:  70% 7040/10000 [00:14<00:04, 655.26sample/s]Total inferences:  72% 7168/10000 [00:14<00:04, 664.45sample/s]Total inferences:  73% 7296/10000 [00:15<00:03, 724.20sample/s]Total inferences:  74% 7424/10000 [00:15<00:03, 684.35sample/s]Total inferences:  76% 7552/10000 [00:15<00:03, 740.50sample/s]Total inferences:  77% 7680/10000 [00:15<00:02, 784.49sample/s]Total inferences:  78% 7808/10000 [00:15<00:03, 721.06sample/s]Total inferences:  79% 7936/10000 [00:15<00:03, 682.42sample/s]Total inferences:  81% 8064/10000 [00:16<00:02, 656.49sample/s]Total inferences:  82% 8192/10000 [00:16<00:02, 716.61sample/s]Total inferences:  83% 8320/10000 [00:16<00:02, 766.51sample/s]Total inferences:  84% 8448/10000 [00:16<00:02, 710.58sample/s]Total inferences:  86% 8576/10000 [00:16<00:02, 675.34sample/s]Total inferences:  87% 8704/10000 [00:17<00:01, 653.57sample/s]Total inferences:  88% 8832/10000 [00:17<00:01, 714.94sample/s]Total inferences:  90% 8960/10000 [00:17<00:01, 765.15sample/s]Total inferences:  91% 9088/10000 [00:17<00:01, 801.54sample/s]Total inferences:  92% 9216/10000 [00:17<00:01, 731.27sample/s]Total inferences:  93% 9344/10000 [00:17<00:00, 778.28sample/s]Total inferences:  95% 9472/10000 [00:18<00:00, 717.26sample/s]Total inferences:  96% 9600/10000 [00:18<00:00, 679.26sample/s]Total inferences:  97% 9728/10000 [00:18<00:00, 653.31sample/s]Total inferences:  99% 9856/10000 [00:18<00:00, 714.28sample/s]Total inferences: 100% 9984/10000 [00:18<00:00, 678.29sample/s]Total inferences: 100% 10000/10000 [00:18<00:00, 528.02sample/s]
+4. Accuracy  : 98.50%
+5. Metrics saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/baseline
+   (core cycles stored in cycles_core.npy)
+   (dynamic power, per-window)  mean=14.96 mW, P90=0.00 mW
+   (absolute power trace stored in power_abs.npy)
+   (dynamic-only power trace stored in power_dyn.npy)
+   (per-window stats stored in power_windows.npy)
+HW vs GT Accuracy        : 98.500000%
+Golden vs GT Accuracy    : 98.480000%
+Accuracy Δ (HW − Golden) : +0.020000 percentage points
+
+[COMMS]
+  Latency   : 0.4935 ms ± 0.0173  (min=0.4540, max=0.6340)
+            : P50=0.4870  P90=0.5100  P99=0.5690
+  Throughput: 2028.74 inf/s ± 64.47
+
+[INF]
+  Latency   : 0.2184 ms ± 0.0086  (min=0.1730, max=0.2690)
+            : P50=0.2160  P90=0.2280  P99=0.2540
+  Throughput: 4585.64 inf/s ± 170.20
+
+[CYCLES core]   (9904 samples)
+  Mean cycles : 23160 ± 0  (min=23160, max=23160)
+            : P50=23160  P90=23160  P99=23160
+  Mean time  : 154.400 µs (6476.68 inf/s @ 150 MHz)
+
+[CYCLES e2e]   (9904 samples)
+  Mean cycles : 23404 ± 10126  (min=23178, max=612006)
+            : P50=23178  P90=23178  P99=23178
+  Mean time  : 156.026 µs (6409.20 inf/s @ 150 MHz)
+
+[CYCLES overhead (e2e - core)]   (9904 samples)
+  Mean cycles : 244 ± 10126  (min=18, max=588846)
+            : P50=18  P90=18  P99=18
+  Mean time  : 1.626 µs (615074.03 inf/s @ 150 MHz)
+
+[POWER absolute]   (119 samples)
+  Mean  : 3541.93 mW ± 220.34
+  Min   : 3240.00 mW
+  Max   : 4130.00 mW
+  Peak  : 4040.00 mW (P99)
+
+[POWER dynamic]   (119 samples)
+  Mean  : 284.76 mW ± 217.74
+  Min   : 0.00 mW
+  Max   : 870.86 mW
+  Peak  : 780.86 mW (P99)
+Power trace saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/baseline/power_trace.png
+HW Precision/Recall/F1:
+  micro   P/R/F1 = 0.9850 / 0.9850 / 0.9850
+  macro   P/R/F1 = 0.9851 / 0.9849 / 0.9849
+  weightedP/R/F1 = 0.9851 / 0.9850 / 0.9850
+  (per-class PRF saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/baseline/prf_hw.csv)
+Golden Precision/Recall/F1:
+  micro   P/R/F1 = 0.9848 / 0.9848 / 0.9848
+  macro   P/R/F1 = 0.9849 / 0.9846 / 0.9847
+  weightedP/R/F1 = 0.9849 / 0.9848 / 0.9848
+  (per-class PRF saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/baseline/prf_golden.csv)
+Confusion matrix saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/baseline/confusion_matrix.png
+ROC curve saved        → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/baseline/roc_curve.png
+1. Loading and quantising MNIST test set…
+   Dataset: mnist  Samples: 10000  Features: 784
+2. Programming FPGA bitstream…
+Power rails:
+  - /sys/class/hwmon/hwmon2/power1_input
+3. Running inference…
+Total inferences:   0% 0/10000 [00:00<?, ?sample/s]Idle baseline power: 3222.1 mW across 1 rail(s)
+Total inferences:   1% 128/10000 [00:05<06:48, 24.15sample/s]Total inferences:   3% 256/10000 [00:05<02:52, 56.51sample/s]Total inferences:   4% 384/10000 [00:05<01:39, 96.27sample/s]Total inferences:   5% 512/10000 [00:05<01:05, 144.06sample/s]Total inferences:   6% 640/10000 [00:06<00:45, 206.85sample/s]Total inferences:   8% 768/10000 [00:06<00:32, 280.66sample/s]Total inferences:   9% 896/10000 [00:06<00:25, 362.71sample/s]Total inferences:  10% 1024/10000 [00:06<00:20, 448.59sample/s]Total inferences:  12% 1152/10000 [00:06<00:18, 488.14sample/s]Total inferences:  13% 1280/10000 [00:06<00:16, 518.72sample/s]Total inferences:  14% 1408/10000 [00:06<00:14, 597.39sample/s]Total inferences:  15% 1536/10000 [00:07<00:12, 667.36sample/s]Total inferences:  17% 1664/10000 [00:07<00:11, 726.38sample/s]Total inferences:  18% 1792/10000 [00:07<00:10, 773.47sample/s]Total inferences:  19% 1920/10000 [00:07<00:09, 810.81sample/s]Total inferences:  20% 2048/10000 [00:07<00:09, 838.75sample/s]Total inferences:  22% 2176/10000 [00:07<00:09, 859.34sample/s]Total inferences:  23% 2304/10000 [00:07<00:08, 874.23sample/s]Total inferences:  24% 2432/10000 [00:08<00:09, 770.91sample/s]Total inferences:  26% 2560/10000 [00:08<00:09, 807.59sample/s]Total inferences:  27% 2688/10000 [00:08<00:08, 835.55sample/s]Total inferences:  28% 2816/10000 [00:08<00:08, 855.93sample/s]Total inferences:  29% 2944/10000 [00:08<00:08, 871.38sample/s]Total inferences:  31% 3072/10000 [00:08<00:07, 883.43sample/s]Total inferences:  32% 3200/10000 [00:09<00:07, 891.81sample/s]Total inferences:  33% 3328/10000 [00:09<00:08, 771.56sample/s]Total inferences:  35% 3456/10000 [00:09<00:09, 712.99sample/s]Total inferences:  36% 3584/10000 [00:09<00:09, 674.45sample/s]Total inferences:  37% 3712/10000 [00:09<00:09, 652.55sample/s]Total inferences:  38% 3840/10000 [00:10<00:08, 713.23sample/s]Total inferences:  40% 3968/10000 [00:10<00:08, 677.75sample/s]Total inferences:  41% 4096/10000 [00:10<00:08, 734.60sample/s]Total inferences:  42% 4224/10000 [00:10<00:08, 689.94sample/s]Total inferences:  44% 4352/10000 [00:10<00:07, 744.13sample/s]Total inferences:  45% 4480/10000 [00:10<00:07, 694.76sample/s]Total inferences:  46% 4608/10000 [00:11<00:08, 665.59sample/s]Total inferences:  47% 4736/10000 [00:11<00:08, 646.67sample/s]Total inferences:  49% 4864/10000 [00:11<00:07, 707.41sample/s]Total inferences:  50% 4992/10000 [00:11<00:07, 671.29sample/s]Total inferences:  51% 5120/10000 [00:11<00:06, 728.80sample/s]Total inferences:  52% 5248/10000 [00:12<00:06, 711.93sample/s]Total inferences:  54% 5376/10000 [00:12<00:06, 761.29sample/s]Total inferences:  55% 5504/10000 [00:12<00:05, 801.13sample/s]Total inferences:  56% 5632/10000 [00:12<00:05, 830.90sample/s]Total inferences:  58% 5760/10000 [00:12<00:05, 747.50sample/s]Total inferences:  59% 5888/10000 [00:12<00:05, 790.22sample/s]Total inferences:  60% 6016/10000 [00:12<00:04, 823.14sample/s]Total inferences:  61% 6144/10000 [00:13<00:05, 743.12sample/s]Total inferences:  63% 6272/10000 [00:13<00:04, 786.82sample/s]Total inferences:  64% 6400/10000 [00:13<00:04, 820.15sample/s]Total inferences:  65% 6528/10000 [00:13<00:04, 845.81sample/s]Total inferences:  67% 6656/10000 [00:13<00:03, 863.74sample/s]Total inferences:  68% 6784/10000 [00:13<00:04, 765.27sample/s]Total inferences:  69% 6912/10000 [00:14<00:03, 804.13sample/s]Total inferences:  70% 7040/10000 [00:14<00:03, 833.59sample/s]Total inferences:  72% 7168/10000 [00:14<00:03, 741.26sample/s]Total inferences:  73% 7296/10000 [00:14<00:03, 785.10sample/s]Total inferences:  74% 7424/10000 [00:14<00:03, 819.36sample/s]Total inferences:  76% 7552/10000 [00:14<00:03, 741.36sample/s]Total inferences:  77% 7680/10000 [00:15<00:02, 784.83sample/s]Total inferences:  78% 7808/10000 [00:15<00:02, 818.88sample/s]Total inferences:  79% 7936/10000 [00:15<00:02, 741.03sample/s]Total inferences:  81% 8064/10000 [00:15<00:02, 781.18sample/s]Total inferences:  82% 8192/10000 [00:15<00:02, 816.62sample/s]Total inferences:  83% 8320/10000 [00:15<00:01, 843.18sample/s]Total inferences:  84% 8448/10000 [00:15<00:01, 862.50sample/s]Total inferences:  86% 8576/10000 [00:16<00:01, 876.74sample/s]Total inferences:  87% 8704/10000 [00:16<00:01, 772.53sample/s]Total inferences:  88% 8832/10000 [00:16<00:01, 810.15sample/s]Total inferences:  90% 8960/10000 [00:16<00:01, 838.36sample/s]Total inferences:  91% 9088/10000 [00:16<00:01, 751.89sample/s]Total inferences:  92% 9216/10000 [00:16<00:00, 793.87sample/s]Total inferences:  93% 9344/10000 [00:17<00:00, 725.81sample/s]Total inferences:  95% 9472/10000 [00:17<00:00, 773.38sample/s]Total inferences:  96% 9600/10000 [00:17<00:00, 810.16sample/s]Total inferences:  97% 9728/10000 [00:17<00:00, 837.50sample/s]Total inferences:  99% 9856/10000 [00:17<00:00, 751.34sample/s]Total inferences: 100% 9984/10000 [00:18<00:00, 701.09sample/s]Total inferences: 100% 10000/10000 [00:18<00:00, 551.92sample/s]
+4. Accuracy  : 98.02%
+5. Metrics saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/quant
+   (core cycles stored in cycles_core.npy)
+   (dynamic power, per-window)  mean=10.61 mW, P90=0.00 mW
+   (absolute power trace stored in power_abs.npy)
+   (dynamic-only power trace stored in power_dyn.npy)
+   (per-window stats stored in power_windows.npy)
+HW vs GT Accuracy        : 98.020000%
+Golden vs GT Accuracy    : 98.020000%
+Accuracy Δ (HW − Golden) : +0.000000 percentage points
+
+[COMMS]
+  Latency   : 0.4949 ms ± 0.0156  (min=0.4730, max=0.6350)
+            : P50=0.4890  P90=0.5080  P99=0.5650
+  Throughput: 2022.55 inf/s ± 57.74
+
+[INF]
+  Latency   : 0.2179 ms ± 0.0080  (min=0.1740, max=0.2650)
+            : P50=0.2160  P90=0.2250  P99=0.2490
+  Throughput: 4595.90 inf/s ± 163.81
+
+[CYCLES core]   (9905 samples)
+  Mean cycles : 23165 ± 0  (min=23165, max=23165)
+            : P50=23165  P90=23165  P99=23165
+  Mean time  : 154.433 µs (6475.29 inf/s @ 150 MHz)
+
+[CYCLES e2e]   (9905 samples)
+  Mean cycles : 23183 ± 8  (min=23183, max=23930)
+            : P50=23183  P90=23183  P99=23183
+  Mean time  : 154.554 µs (6470.24 inf/s @ 150 MHz)
+
+[CYCLES overhead (e2e - core)]   (9905 samples)
+  Mean cycles : 18 ± 8  (min=18, max=765)
+            : P50=18  P90=18  P99=18
+  Mean time  : 0.121 µs (8298563.98 inf/s @ 150 MHz)
+
+[POWER absolute]   (107 samples)
+  Mean  : 3512.62 mW ± 204.64
+  Min   : 3180.00 mW
+  Max   : 4060.00 mW
+  Peak  : 4058.20 mW (P99)
+
+[POWER dynamic]   (107 samples)
+  Mean  : 294.21 mW ± 199.11
+  Min   : 0.00 mW
+  Max   : 837.93 mW
+  Peak  : 836.13 mW (P99)
+Power trace saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/quant/power_trace.png
+HW Precision/Recall/F1:
+  micro   P/R/F1 = 0.9802 / 0.9802 / 0.9802
+  macro   P/R/F1 = 0.9806 / 0.9800 / 0.9802
+  weightedP/R/F1 = 0.9803 / 0.9802 / 0.9802
+  (per-class PRF saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/quant/prf_hw.csv)
+Golden Precision/Recall/F1:
+  micro   P/R/F1 = 0.9802 / 0.9802 / 0.9802
+  macro   P/R/F1 = 0.9806 / 0.9800 / 0.9802
+  weightedP/R/F1 = 0.9803 / 0.9802 / 0.9802
+  (per-class PRF saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/quant/prf_golden.csv)
+Confusion matrix saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/quant/confusion_matrix.png
+ROC curve saved        → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/quant/roc_curve.png
+1. Loading and quantising MNIST test set…
+   Dataset: mnist  Samples: 10000  Features: 784
+2. Programming FPGA bitstream…
+Power rails:
+  - /sys/class/hwmon/hwmon2/power1_input
+3. Running inference…
+Total inferences:   0% 0/10000 [00:00<?, ?sample/s]Idle baseline power: 3363.3 mW across 1 rail(s)
+Total inferences:   1% 128/10000 [00:05<06:47, 24.23sample/s]Total inferences:   3% 256/10000 [00:05<02:51, 56.74sample/s]Total inferences:   4% 384/10000 [00:05<01:39, 96.95sample/s]Total inferences:   5% 512/10000 [00:05<01:03, 150.07sample/s]Total inferences:   6% 640/10000 [00:05<00:43, 215.44sample/s]Total inferences:   8% 768/10000 [00:06<00:33, 276.95sample/s]Total inferences:   9% 896/10000 [00:06<00:26, 338.22sample/s]Total inferences:  10% 1024/10000 [00:06<00:21, 425.12sample/s]Total inferences:  12% 1152/10000 [00:06<00:17, 513.59sample/s]Total inferences:  13% 1280/10000 [00:06<00:14, 591.44sample/s]Total inferences:  14% 1408/10000 [00:06<00:14, 600.25sample/s]Total inferences:  15% 1536/10000 [00:07<00:12, 672.99sample/s]Total inferences:  17% 1664/10000 [00:07<00:12, 652.87sample/s]Total inferences:  18% 1792/10000 [00:07<00:12, 642.34sample/s]Total inferences:  19% 1920/10000 [00:07<00:12, 636.07sample/s]Total inferences:  20% 2048/10000 [00:07<00:11, 706.16sample/s]Total inferences:  22% 2176/10000 [00:07<00:10, 764.58sample/s]Total inferences:  23% 2304/10000 [00:08<00:10, 714.94sample/s]Total inferences:  24% 2432/10000 [00:08<00:11, 683.70sample/s]Total inferences:  26% 2560/10000 [00:08<00:11, 662.66sample/s]Total inferences:  27% 2688/10000 [00:08<00:11, 647.26sample/s]Total inferences:  28% 2816/10000 [00:08<00:11, 639.61sample/s]Total inferences:  29% 2944/10000 [00:09<00:09, 708.99sample/s]Total inferences:  31% 3072/10000 [00:09<00:09, 767.48sample/s]Total inferences:  32% 3200/10000 [00:09<00:09, 717.32sample/s]Total inferences:  33% 3328/10000 [00:09<00:09, 686.01sample/s]Total inferences:  35% 3456/10000 [00:09<00:08, 748.20sample/s]Total inferences:  36% 3584/10000 [00:10<00:09, 705.68sample/s]Total inferences:  37% 3712/10000 [00:10<00:08, 764.50sample/s]Total inferences:  38% 3840/10000 [00:10<00:08, 715.28sample/s]Total inferences:  40% 3968/10000 [00:10<00:08, 684.74sample/s]Total inferences:  41% 4096/10000 [00:10<00:07, 747.06sample/s]Total inferences:  42% 4224/10000 [00:10<00:08, 704.40sample/s]Total inferences:  44% 4352/10000 [00:11<00:08, 677.74sample/s]Total inferences:  45% 4480/10000 [00:11<00:08, 659.95sample/s]Total inferences:  46% 4608/10000 [00:11<00:08, 647.90sample/s]Total inferences:  47% 4736/10000 [00:11<00:08, 639.93sample/s]Total inferences:  49% 4864/10000 [00:11<00:07, 708.92sample/s]Total inferences:  50% 4992/10000 [00:11<00:06, 767.23sample/s]Total inferences:  51% 5120/10000 [00:12<00:06, 716.81sample/s]Total inferences:  52% 5248/10000 [00:12<00:07, 677.37sample/s]Total inferences:  54% 5376/10000 [00:12<00:06, 738.64sample/s]Total inferences:  55% 5504/10000 [00:12<00:06, 699.11sample/s]Total inferences:  56% 5632/10000 [00:12<00:05, 758.79sample/s]Total inferences:  58% 5760/10000 [00:13<00:05, 711.66sample/s]Total inferences:  59% 5888/10000 [00:13<00:05, 768.59sample/s]Total inferences:  60% 6016/10000 [00:13<00:05, 717.42sample/s]Total inferences:  61% 6144/10000 [00:13<00:05, 682.80sample/s]Total inferences:  63% 6272/10000 [00:13<00:05, 663.18sample/s]Total inferences:  64% 6400/10000 [00:13<00:04, 726.60sample/s]Total inferences:  65% 6528/10000 [00:14<00:05, 691.98sample/s]Total inferences:  67% 6656/10000 [00:14<00:05, 668.53sample/s]Total inferences:  68% 6784/10000 [00:14<00:04, 733.19sample/s]Total inferences:  69% 6912/10000 [00:14<00:04, 695.86sample/s]Total inferences:  70% 7040/10000 [00:14<00:03, 755.99sample/s]Total inferences:  72% 7168/10000 [00:15<00:03, 804.90sample/s]Total inferences:  73% 7296/10000 [00:15<00:03, 843.36sample/s]Total inferences:  74% 7424/10000 [00:15<00:03, 762.06sample/s]Total inferences:  76% 7552/10000 [00:15<00:03, 713.81sample/s]Total inferences:  77% 7680/10000 [00:15<00:03, 770.93sample/s]Total inferences:  78% 7808/10000 [00:15<00:02, 816.42sample/s]Total inferences:  79% 7936/10000 [00:15<00:02, 851.51sample/s]Total inferences:  81% 8064/10000 [00:16<00:02, 766.76sample/s]Total inferences:  82% 8192/10000 [00:16<00:02, 813.13sample/s]Total inferences:  83% 8320/10000 [00:16<00:01, 849.13sample/s]Total inferences:  84% 8448/10000 [00:16<00:01, 875.84sample/s]Total inferences:  86% 8576/10000 [00:16<00:01, 779.54sample/s]Total inferences:  87% 8704/10000 [00:16<00:01, 822.75sample/s]Total inferences:  88% 8832/10000 [00:17<00:01, 750.71sample/s]Total inferences:  90% 8960/10000 [00:17<00:01, 800.67sample/s]Total inferences:  91% 9088/10000 [00:17<00:01, 838.53sample/s]Total inferences:  92% 9216/10000 [00:17<00:00, 835.90sample/s]Total inferences:  93% 9344/10000 [00:17<00:00, 864.72sample/s]Total inferences:  95% 9472/10000 [00:17<00:00, 774.00sample/s]Total inferences:  96% 9600/10000 [00:18<00:00, 819.20sample/s]Total inferences:  97% 9728/10000 [00:18<00:00, 854.05sample/s]Total inferences:  99% 9856/10000 [00:18<00:00, 767.92sample/s]Total inferences: 100% 9984/10000 [00:18<00:00, 717.62sample/s]Total inferences: 100% 10000/10000 [00:18<00:00, 536.06sample/s]
+4. Accuracy  : 98.02%
+5. Metrics saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/optim
+   (core cycles stored in cycles_core.npy)
+   (dynamic power, per-window)  mean=14.31 mW, P90=0.00 mW
+   (absolute power trace stored in power_abs.npy)
+   (dynamic-only power trace stored in power_dyn.npy)
+   (per-window stats stored in power_windows.npy)
+HW vs GT Accuracy        : 98.020000%
+Golden vs GT Accuracy    : 98.020000%
+Accuracy Δ (HW − Golden) : +0.000000 percentage points
+
+[COMMS]
+  Latency   : 0.4535 ms ± 0.0163  (min=0.4250, max=0.5940)
+            : P50=0.4480  P90=0.4680  P99=0.5270
+  Throughput: 2207.68 inf/s ± 71.44
+
+[INF]
+  Latency   : 0.1753 ms ± 0.0079  (min=0.1620, max=0.2300)
+            : P50=0.1730  P90=0.1830  P99=0.2180
+  Throughput: 5713.12 inf/s ± 223.13
+
+[CYCLES core]   (9900 samples)
+  Mean cycles : 2642 ± 1  (min=2642, max=2664)
+            : P50=2642  P90=2642  P99=2642
+  Mean time  : 13.210 µs (75699.19 inf/s @ 200 MHz)
+
+[CYCLES e2e]   (9900 samples)
+  Mean cycles : 13025 ± 38973  (min=10574, max=1655538)
+            : P50=11212  P90=11999  P99=21409
+  Mean time  : 65.127 µs (15354.55 inf/s @ 200 MHz)
+
+[CYCLES overhead (e2e - core)]   (9900 samples)
+  Mean cycles : 10383 ± 38973  (min=7932, max=1652896)
+            : P50=8570  P90=9357  P99=18767
+  Mean time  : 51.917 µs (19261.47 inf/s @ 200 MHz)
+
+[POWER absolute]   (122 samples)
+  Mean  : 3610.49 mW ± 201.76
+  Min   : 3320.00 mW
+  Max   : 4160.00 mW
+  Peak  : 4137.90 mW (P99)
+
+[POWER dynamic]   (122 samples)
+  Mean  : 252.01 mW ± 195.40
+  Min   : 0.00 mW
+  Max   : 796.72 mW
+  Peak  : 774.62 mW (P99)
+Power trace saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/optim/power_trace.png
+HW Precision/Recall/F1:
+  micro   P/R/F1 = 0.9802 / 0.9802 / 0.9802
+  macro   P/R/F1 = 0.9806 / 0.9800 / 0.9802
+  weightedP/R/F1 = 0.9803 / 0.9802 / 0.9802
+  (per-class PRF saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/optim/prf_hw.csv)
+Golden Precision/Recall/F1:
+  micro   P/R/F1 = 0.9802 / 0.9802 / 0.9802
+  macro   P/R/F1 = 0.9806 / 0.9800 / 0.9802
+  weightedP/R/F1 = 0.9803 / 0.9802 / 0.9802
+  (per-class PRF saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/optim/prf_golden.csv)
+Confusion matrix saved → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/optim/confusion_matrix.png
+ROC curve saved        → /home/ubuntu/AI_ON_FPGA_TARGET_SCRIPTS/metrics/optim/roc_curve.png

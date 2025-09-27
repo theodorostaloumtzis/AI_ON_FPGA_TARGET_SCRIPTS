@@ -2,9 +2,14 @@
 """
 validate_results.py — metrics, plots & power analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Validates FPGA output (y_hw.npy) against MNIST ground-truth labels and an
-(optional) golden reference; prints robust latency / throughput statistics,
+Validates FPGA output (y_hw.npy) against ground-truth labels (MNIST or SVHN)
+and an optional golden reference. Prints robust latency/throughput statistics,
 cycle counts (core / end-to-end), and power-usage stats if available.
+
+New:
+ - Accuracy comparison (Golden vs GT, HW vs GT) and accuracy drop: (HW − Golden) in percentage points
+ - Precision / Recall / F1 for the HW model (and Golden if provided)
+ - Saves per-class PRF CSVs (always inside the run's metrics folder)
 
 Also saves:
  - confusion matrix PNG
@@ -13,12 +18,19 @@ Also saves:
 """
 from __future__ import annotations
 import argparse
+import os
 from pathlib import Path
 
 import numpy as np
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    precision_recall_fscore_support,
+)
 
-from utils.mnist_utils import get_mnist_test_labels  # ground-truth labels
+# Dataset label helpers
+from utils.mnist_utils import get_mnist_test_labels
+from utils.svhn_utils import get_svhn_test_labels
 
 # utils
 from utils.arrays import ensure_2d, align_cols, safe_load, trim_outliers
@@ -46,17 +58,25 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--y-hw",      default="y_hw.npy",
                    help="FPGA logits file")
     p.add_argument("--golden",    default="golden_preds.npy",
-                   help="Optional golden-reference logits file")
+                   help="Optional golden-reference logits file (same shape as y_hw)")
+
+    # dataset
+    p.add_argument("--dataset", choices=["mnist", "svhn"],
+                   default=os.environ.get("DATASET", "mnist"),
+                   help="Choose ground-truth label source")
+
     # timing / throughput arrays
     p.add_argument("--latency-comm",    default="latency_comm.npy")
     p.add_argument("--throughput-comm", default="throughput_comm.npy")
     p.add_argument("--latency-inf",     default="latency_inf.npy")
     p.add_argument("--throughput-inf",  default="throughput_inf.npy")
+
     # raw cycles
     p.add_argument("--cycles-core", default="cycles_core.npy")
     p.add_argument("--cycles-e2e",  default="cycles_e2e.npy")
     p.add_argument("--clk-mhz",   type=float, default=None,
                    help="FPGA clock in MHz for cycles→µs conversion")
+
     # power monitoring
     p.add_argument("--power-abs", default="power_abs.npy",
                    help="Absolute board power trace (mW)")
@@ -64,6 +84,7 @@ def parse_args() -> argparse.Namespace:
                    help="Idle-subtracted dynamic power trace (mW)")
     p.add_argument("--power-trace-name", default="power_trace.png",
                    help="Output power trace plot file")
+
     # outlier trimming & plotting
     p.add_argument("--exclude-pct", type=float, default=0.0,
                    help="Trim slowest P%% latency samples (0..100)")
@@ -74,18 +95,59 @@ def parse_args() -> argparse.Namespace:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Helpers
+# ─────────────────────────────────────────────────────────────────────────────
+def load_ground_truth(dataset: str) -> np.ndarray:
+    if dataset == "mnist":
+        return ensure_2d(get_mnist_test_labels("mnist"))
+    elif dataset == "svhn":
+        return ensure_2d(get_svhn_test_labels("svhn"))
+    raise ValueError(f"Unknown dataset: {dataset}")
+
+def prf_summary(y_true_cls: np.ndarray, y_pred_cls: np.ndarray, n_classes: int):
+    # Per-class
+    p, r, f1, supp = precision_recall_fscore_support(
+        y_true_cls, y_pred_cls, labels=np.arange(n_classes), zero_division=0
+    )
+    # Aggregates
+    p_micro, r_micro, f1_micro, _ = precision_recall_fscore_support(
+        y_true_cls, y_pred_cls, average="micro", zero_division=0
+    )
+    p_macro, r_macro, f1_macro, _ = precision_recall_fscore_support(
+        y_true_cls, y_pred_cls, average="macro", zero_division=0
+    )
+    p_weight, r_weight, f1_weight, _ = precision_recall_fscore_support(
+        y_true_cls, y_pred_cls, average="weighted", zero_division=0
+    )
+    return {
+        "per_class": (p, r, f1, supp),
+        "micro": (p_micro, r_micro, f1_micro),
+        "macro": (p_macro, r_macro, f1_macro),
+        "weighted": (p_weight, r_weight, f1_weight),
+    }
+
+def save_prf_csv(out_path: Path, p: np.ndarray, r: np.ndarray, f1: np.ndarray, supp: np.ndarray):
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    header = "class,precision,recall,f1, support"
+    classes = np.arange(len(p))
+    rows = np.column_stack([classes, p, r, f1, supp])
+    np.savetxt(out_path, rows, fmt=["%d","%.6f","%.6f","%.6f","%d"], delimiter=",", header=header, comments="")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 def main() -> None:
     args = parse_args()
     mdir = Path(args.metrics_dir)
+    mdir.mkdir(parents=True, exist_ok=True)
 
     # ── predictions ────────────────────────────────────────────────────
     y_hw_path = mdir / args.y_hw
     if not y_hw_path.exists():
         raise FileNotFoundError(f"Missing logits file: {y_hw_path}")
     y_hw   = ensure_2d(np.load(y_hw_path))
-    y_true = ensure_2d(get_mnist_test_labels("mnist"))
+    y_true = load_ground_truth(args.dataset)
     y_true, y_hw = align_cols(y_true, y_hw)
 
     y_ref = safe_load(mdir / args.golden)
@@ -93,13 +155,24 @@ def main() -> None:
         y_ref = ensure_2d(y_ref)
         y_true, y_ref = align_cols(y_true, y_ref)
 
-    print(f"HW vs GT Accuracy    : "
-          f"{accuracy_score(y_true.argmax(1), y_hw.argmax(1)) * 100:.6f}%")
-    if y_ref is not None:
-        print(f"HW vs Golden Accuracy: "
-              f"{accuracy_score(y_ref.argmax(1), y_hw.argmax(1)) * 100:.6f}%")
+    # Class indices
+    y_true_cls = y_true.argmax(1)
+    y_hw_cls   = y_hw.argmax(1)
+    n_classes  = y_true.shape[1]
 
-    # ── load timing arrays ─────────────────────────────────────────────
+    # Accuracies and accuracy drop
+    acc_hw_gt = accuracy_score(y_true_cls, y_hw_cls) * 100.0
+    print(f"HW vs GT Accuracy        : {acc_hw_gt:.6f}%")
+    acc_ref_gt = None
+    if y_ref is not None:
+        y_ref_cls = y_ref.argmax(1)
+        acc_ref_gt = accuracy_score(y_true_cls, y_ref_cls) * 100.0
+        print(f"Golden vs GT Accuracy    : {acc_ref_gt:.6f}%")
+        drop_pp = acc_hw_gt - acc_ref_gt  # +ve → HW better; -ve → HW drop vs Golden
+        sign = "+" if drop_pp >= 0 else ""
+        print(f"Accuracy Δ (HW − Golden) : {sign}{drop_pp:.6f} percentage points")
+
+    # ── timing arrays ──────────────────────────────────────────────────
     arrays = {
         "COMMS_lat": safe_load(mdir / args.latency_comm),
         "COMMS_thr": safe_load(mdir / args.throughput_comm),
@@ -156,8 +229,32 @@ def main() -> None:
         plot_power_trace(p_abs, p_dyn, out_path)
         print(f"Power trace saved → {out_path}")
 
+    # ── PRF metrics (HW; Golden optional) — CSVs saved in the run's metrics folder ──
+    # HW
+    prf_hw = prf_summary(y_true_cls, y_hw_cls, n_classes)
+    p_hw, r_hw, f1_hw, supp_hw = prf_hw["per_class"]
+    out_hw_csv = mdir / "prf_hw.csv"
+    save_prf_csv(out_hw_csv, p_hw, r_hw, f1_hw, supp_hw)
+    print("HW Precision/Recall/F1:")
+    print(f"  micro   P/R/F1 = {prf_hw['micro'][0]:.4f} / {prf_hw['micro'][1]:.4f} / {prf_hw['micro'][2]:.4f}")
+    print(f"  macro   P/R/F1 = {prf_hw['macro'][0]:.4f} / {prf_hw['macro'][1]:.4f} / {prf_hw['macro'][2]:.4f}")
+    print(f"  weightedP/R/F1 = {prf_hw['weighted'][0]:.4f} / {prf_hw['weighted'][1]:.4f} / {prf_hw['weighted'][2]:.4f}")
+    print(f"  (per-class PRF saved → {out_hw_csv})")
+
+    # Golden (if provided)
+    if y_ref is not None:
+        prf_ref = prf_summary(y_true_cls, y_ref_cls, n_classes)
+        p_ref, r_ref, f1_ref, supp_ref = prf_ref["per_class"]
+        out_ref_csv = mdir / "prf_golden.csv"
+        save_prf_csv(out_ref_csv, p_ref, r_ref, f1_ref, supp_ref)
+        print("Golden Precision/Recall/F1:")
+        print(f"  micro   P/R/F1 = {prf_ref['micro'][0]:.4f} / {prf_ref['micro'][1]:.4f} / {prf_ref['micro'][2]:.4f}")
+        print(f"  macro   P/R/F1 = {prf_ref['macro'][0]:.4f} / {prf_ref['macro'][1]:.4f} / {prf_ref['macro'][2]:.4f}")
+        print(f"  weightedP/R/F1 = {prf_ref['weighted'][0]:.4f} / {prf_ref['weighted'][1]:.4f} / {prf_ref['weighted'][2]:.4f}")
+        print(f"  (per-class PRF saved → {out_ref_csv})")
+
     # ── plots ─────────────────────────────────────────────────────────
-    cm = confusion_matrix(y_true.argmax(1), y_hw.argmax(1))
+    cm = confusion_matrix(y_true_cls, y_hw_cls, labels=np.arange(n_classes))
     plot_confusion(cm, mdir / args.cm_name)
     plot_multi_roc(y_true, y_hw, mdir / args.roc_name)
     print(f"Confusion matrix saved → {mdir / args.cm_name}")
