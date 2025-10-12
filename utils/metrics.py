@@ -38,3 +38,4 @@ def print_power_stats(tag: str, ts_power_mw: np.ndarray) -> None:
     print(f"  Min   : {power.min():.2f} mW")
     print(f"  Max   : {power.max():.2f} mW")
     print(f"  Peak  : {np.percentile(power, 99):.2f} mW (P99)")
+    return power.mean()

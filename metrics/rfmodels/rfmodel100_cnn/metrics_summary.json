@@ -1,0 +1,49 @@
+{
+  "metrics_dir": "C:\\Users\\SagittariusA\\Documents\\Projects\\AI_ON_FPGA_TARGET_SCRIPTS\\metrics\\rfmodels\\rfmodel100_cnn",
+  "clk_mhz": 150.0,
+  "accuracy": {
+    "hw_vs_gt_pct": 98.02,
+    "golden_vs_gt_pct": 98.02,
+    "delta_hw_minus_golden_pp": 0.0
+  },
+  "comms": {
+    "latency_mean_ms": 1.4599172727272727,
+    "throughput_mean_inf_per_s": 685.4840874629277
+  },
+  "inf": {
+    "latency_mean_ms": 1.0320041405776612,
+    "throughput_mean_inf_per_s": 969.5843044971072
+  },
+  "cycles": {
+    "core": {
+      "mean_cycles": 160692,
+      "mean_time_us": 1071.28
+    },
+    "e2e": {
+      "mean_cycles": null,
+      "mean_time_us": null
+    },
+    "overhead": {
+      "mean_cycles": null,
+      "mean_time_us": null
+    }
+  },
+  "power": {
+    "absolute": {
+      "mean_w": 3402.7027027027025
+    },
+    "dynamic": {
+      "mean_w": null
+    }
+  },
+  "hw_prf_micro": {
+    "precision": 0.9802,
+    "recall": 0.9802,
+    "f1": 0.9802
+  },
+  "golden_prf_micro": {
+    "precision": 0.9802,
+    "recall": 0.9802,
+    "f1": 0.9802
+  }
+}

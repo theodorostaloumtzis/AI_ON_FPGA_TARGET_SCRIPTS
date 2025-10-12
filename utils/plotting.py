@@ -50,12 +50,13 @@ def plot_power_trace(p_abs: np.ndarray | None,
                      out_path: Path) -> None:
     fig, ax = plt.subplots(figsize=(7, 4))
     if p_abs is not None and p_abs.size:
-        ax.plot(p_abs[:, 0] - p_abs[0, 0], p_abs[:, 1], label="Absolute (mW)")
+        ax.plot(p_abs[:, 0] - p_abs[0, 0], p_abs[:, 1], label="Total On-chip power (mW)")
     if p_dyn is not None and p_dyn.size:
         ax.plot(p_dyn[:, 0] - p_dyn[0, 0], p_dyn[:, 1], label="Dynamic (mW)")
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Power (mW)")
     ax.set_title("Power Trace")
+    ax.set_ylim(bottom=0)
     ax.grid(True, which="both", ls="--", lw=0.5)
     ax.legend()
     fig.tight_layout()

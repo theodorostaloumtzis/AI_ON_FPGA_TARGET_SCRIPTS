@@ -6,20 +6,20 @@ Validates FPGA output (y_hw.npy) against ground-truth labels (MNIST or SVHN)
 and an optional golden reference. Prints robust latency/throughput statistics,
 cycle counts (core / end-to-end), and power-usage stats if available.
 
-New:
+Adds:
  - Accuracy comparison (Golden vs GT, HW vs GT) and accuracy drop: (HW − Golden) in percentage points
  - Precision / Recall / F1 for the HW model (and Golden if provided)
  - Saves per-class PRF CSVs (always inside the run's metrics folder)
-
-Also saves:
- - confusion matrix PNG
- - multi-class ROC PNG
- - power trace PNG (if power data present)
+ - Saves a machine-readable summary of ALL metrics:
+     * metrics_summary.json  (nested, detailed)
+     * metrics_summary.csv   (flat, one row)
 """
+
 from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
+from math import isnan
 
 import numpy as np
 from sklearn.metrics import (
@@ -127,11 +127,17 @@ def prf_summary(y_true_cls: np.ndarray, y_pred_cls: np.ndarray, n_classes: int):
     }
 
 def save_prf_csv(out_path: Path, p: np.ndarray, r: np.ndarray, f1: np.ndarray, supp: np.ndarray):
-    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.parent.mkdir(parents=True, exist_ok=True
+    )
     header = "class,precision,recall,f1, support"
     classes = np.arange(len(p))
     rows = np.column_stack([classes, p, r, f1, supp])
     np.savetxt(out_path, rows, fmt=["%d","%.6f","%.6f","%.6f","%d"], delimiter=",", header=header, comments="")
+
+def _mean(arr: np.ndarray | None) -> float | None:
+    if arr is None or arr.size == 0:
+        return None
+    return float(np.mean(arr))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -192,13 +198,13 @@ def main() -> None:
         if arrays["COMMS_thr"] is not None and mask_comm is not None:
             arrays["COMMS_thr"] = arrays["COMMS_thr"][mask_comm]
 
-    # ── latency / throughput stats ─────────────────────────────────────
+    # ── latency / throughput stats (prints) ────────────────────────────
     for tag in ("COMMS", "INF"):
         lat, thr = arrays[f"{tag}_lat"], arrays[f"{tag}_thr"]
         if lat is not None and thr is not None:
             print_latency_thr_stats(tag, lat, thr)
 
-    # ── cycle counts ───────────────────────────────────────────────────
+    # ── cycle counts (prints) ──────────────────────────────────────────
     core = safe_load(mdir / args.cycles_core)
     e2e  = safe_load(mdir / args.cycles_e2e)
 
@@ -215,14 +221,16 @@ def main() -> None:
         overhead = e2e.astype(np.int64) - core.astype(np.int64)
         print_cycle_stats("CYCLES overhead (e2e - core)", overhead, args.clk_mhz)
 
-    # ── power stats & plot ─────────────────────────────────────────────
+    # ── power stats & plot (prints) ────────────────────────────────────
     p_abs = safe_load(mdir / args.power_abs)
-    p_dyn = safe_load(mdir / args.power_dyn)
+    p_dyn = None
 
+    p_abs_mean = None
+    p_dyn_mean = None
     if p_abs is not None:
-        print_power_stats("POWER absolute", p_abs)
+        p_abs_mean = print_power_stats("POWER absolute", p_abs)
     if p_dyn is not None:
-        print_power_stats("POWER dynamic", p_dyn)
+        p_dyn_mean = print_power_stats("POWER dynamic", p_dyn)
 
     if p_abs is not None or p_dyn is not None:
         out_path = mdir / args.power_trace_name
@@ -259,6 +267,137 @@ def main() -> None:
     plot_multi_roc(y_true, y_hw, mdir / args.roc_name)
     print(f"Confusion matrix saved → {mdir / args.cm_name}")
     print(f"ROC curve saved        → {mdir / args.roc_name}")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Save a complete, machine-readable metrics summary (JSON + CSV)
+    # ─────────────────────────────────────────────────────────────────────────
+    import json
+    import pandas as pd
+
+    # Averages for COMMS / INF (convert sec → ms)
+    comms_lat_mean_ms = None if arrays["COMMS_lat"] is None else _mean(arrays["COMMS_lat"]) * 1000.0
+    comms_thr_mean_ips = _mean(arrays["COMMS_thr"])
+
+    inf_lat_mean_ms = None if arrays["INF_lat"] is None else _mean(arrays["INF_lat"]) * 1000.0
+    inf_thr_mean_ips = _mean(arrays["INF_thr"])
+
+    # Cycles means + mean time (µs)
+    def cycles_mean_and_time_us(arr: np.ndarray | None):
+        if arr is None or arr.size == 0:
+            return None, None
+        mean_cycles = int(np.mean(arr))
+        mean_time_us = (mean_cycles / args.clk_mhz) if (args.clk_mhz and not isnan(args.clk_mhz)) else None
+        return mean_cycles, mean_time_us
+
+    core_cycles_mean, core_time_us = cycles_mean_and_time_us(core)
+    e2e_cycles_mean,  e2e_time_us  = cycles_mean_and_time_us(e2e)
+
+    overhead_cycles_mean, overhead_time_us = (None, None)
+    if core is not None and e2e is not None and len(core) == len(e2e):
+        overhead = e2e.astype(np.int64) - core.astype(np.int64)
+        overhead_cycles_mean, overhead_time_us = cycles_mean_and_time_us(overhead)
+
+    # Power sample counts & means (W)
+    def power_stats_summary(arr: np.ndarray | None):
+        if arr is None or arr.size == 0:
+            return None, None
+        n = int(arr.size)
+        mean_w = arr.mean() 
+        return n, mean_w
+
+    power_abs_mean_w = p_abs_mean
+    power_dyn_mean_w = p_dyn_mean 
+
+    # HW and Golden PRF (micro aggregates)
+    hw_p, hw_r, hw_f1 = prf_hw["micro"]
+    golden_p = golden_r = golden_f1 = None
+    if y_ref is not None:
+        golden_p, golden_r, golden_f1 = prf_ref["micro"]
+
+    summary = {
+        "metrics_dir": str(mdir),
+        "clk_mhz": args.clk_mhz,
+
+        "accuracy": {
+            "hw_vs_gt_pct": acc_hw_gt,
+            "golden_vs_gt_pct": acc_ref_gt,
+            "delta_hw_minus_golden_pp": (None if acc_ref_gt is None else (acc_hw_gt - acc_ref_gt)),
+        },
+
+        "comms": {
+            "latency_mean_ms": comms_lat_mean_ms,
+            "throughput_mean_inf_per_s": comms_thr_mean_ips,
+        },
+        "inf": {
+            "latency_mean_ms": inf_lat_mean_ms,
+            "throughput_mean_inf_per_s": inf_thr_mean_ips,
+        },
+
+        "cycles": {
+            "core":     {"mean_cycles": core_cycles_mean,   "mean_time_us": core_time_us},
+            "e2e":      {"mean_cycles": e2e_cycles_mean,    "mean_time_us": e2e_time_us},
+            "overhead": {"mean_cycles": overhead_cycles_mean, "mean_time_us": overhead_time_us},
+        },
+
+        "power": {
+            "absolute": {"mean_w": power_abs_mean_w},
+            "dynamic":  {"mean_w": power_dyn_mean_w},
+        },
+
+        "hw_prf_micro": {
+            "precision": float(hw_p) if hw_p is not None else None,
+            "recall":    float(hw_r) if hw_r is not None else None,
+            "f1":        float(hw_f1) if hw_f1 is not None else None,
+        },
+        "golden_prf_micro": {
+            "precision": (float(golden_p) if golden_p is not None else None),
+            "recall":    (float(golden_r) if golden_r is not None else None),
+            "f1":        (float(golden_f1) if golden_f1 is not None else None),
+        },
+    }
+
+    # Write JSON
+    json_path = mdir / "metrics_summary.json"
+    with open(json_path, "w") as f:
+        json.dump(summary, f, indent=2)
+    print(f"Saved metrics summary JSON → {json_path}")
+
+    # Also write a flat CSV (single row) for quick aggregation
+    flat = {
+        "run": mdir.name,
+        "clk_mhz": args.clk_mhz,
+        "acc_hw_vs_gt_pct": acc_hw_gt,
+        "acc_golden_vs_gt_pct": acc_ref_gt,
+        "acc_delta_hw_minus_golden_pp": (None if acc_ref_gt is None else (acc_hw_gt - acc_ref_gt)),
+
+        "comms_lat_ms_mean": comms_lat_mean_ms,
+        "comms_thr_ips_mean": comms_thr_mean_ips,
+        "inf_lat_ms_mean":   inf_lat_mean_ms,
+        "inf_thr_ips_mean":  inf_thr_mean_ips,
+
+        "core_cycles_mean": core_cycles_mean,
+        "core_time_us_mean": core_time_us,
+        "e2e_cycles_mean":  e2e_cycles_mean,
+        "e2e_time_us_mean": e2e_time_us,
+        "overhead_cycles_mean": overhead_cycles_mean,
+        "overhead_time_us_mean": overhead_time_us,
+
+
+        "power_abs_w_mean": power_abs_mean_w,
+        "power_dyn_w_mean": power_dyn_mean_w,
+
+        "hw_precision_micro": float(hw_p) if hw_p is not None else None,
+        "hw_recall_micro":    float(hw_r) if hw_r is not None else None,
+        "hw_f1_micro":        float(hw_f1) if hw_f1 is not None else None,
+        "golden_precision_micro": (float(golden_p) if golden_p is not None else None),
+        "golden_recall_micro":    (float(golden_r) if golden_r is not None else None),
+        "golden_f1_micro":        (float(golden_f1) if golden_f1 is not None else None),
+    }
+
+    import pandas as pd  # local import to avoid hard dep if not needed earlier
+    csv_path = mdir / "metrics_summary.csv"
+    pd.DataFrame([flat]).to_csv(csv_path, index=False)
+    print(f"Saved metrics summary CSV  → {csv_path}")
 
     if not args.no_show:
         import matplotlib.pyplot as plt

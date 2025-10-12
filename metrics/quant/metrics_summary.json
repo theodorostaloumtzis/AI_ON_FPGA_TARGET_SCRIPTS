@@ -1,0 +1,49 @@
+{
+  "metrics_dir": "C:\\Users\\SagittariusA\\Documents\\Projects\\AI_ON_FPGA_TARGET_SCRIPTS\\metrics\\quant",
+  "clk_mhz": 150.0,
+  "accuracy": {
+    "hw_vs_gt_pct": 98.02,
+    "golden_vs_gt_pct": 98.02,
+    "delta_hw_minus_golden_pp": 0.0
+  },
+  "comms": {
+    "latency_mean_ms": 0.494870303030303,
+    "throughput_mean_inf_per_s": 2022.5534717188411
+  },
+  "inf": {
+    "latency_mean_ms": 0.21786845027763754,
+    "throughput_mean_inf_per_s": 4595.900753383733
+  },
+  "cycles": {
+    "core": {
+      "mean_cycles": 23165,
+      "mean_time_us": 154.43333333333334
+    },
+    "e2e": {
+      "mean_cycles": 23183,
+      "mean_time_us": 154.55333333333334
+    },
+    "overhead": {
+      "mean_cycles": 18,
+      "mean_time_us": 0.12
+    }
+  },
+  "power": {
+    "absolute": {
+      "mean_w": 3512.6168224299067
+    },
+    "dynamic": {
+      "mean_w": null
+    }
+  },
+  "hw_prf_micro": {
+    "precision": 0.9802,
+    "recall": 0.9802,
+    "f1": 0.9802
+  },
+  "golden_prf_micro": {
+    "precision": 0.9802,
+    "recall": 0.9802,
+    "f1": 0.9802
+  }
+}
